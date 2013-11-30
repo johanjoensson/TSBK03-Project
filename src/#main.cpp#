@@ -73,7 +73,6 @@ void display(void)
 
 	//draw the model
 	DrawModel(m, program, "in_Position", "in_Normal", "in_TexCoord");
-	
 	printError("display");
 	
 	glutSwapBuffers();

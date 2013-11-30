@@ -6,7 +6,7 @@ INCLUDE = -I$(SRC)common
 CXX = g++
 CC = gcc
 
-LDFLAGS = -lm -lGL
+LDFLAGS = -lm -lGL -lX11
 
 WARNINGS = -Wall -Wextra -W -pedantic
 
