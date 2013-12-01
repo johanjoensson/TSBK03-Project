@@ -5,10 +5,12 @@
 #include "GL_utilities.h"
 #include "zpr.h"
 #include <GL/gl.h>
+#include "object.h"
       
 
-Model *m;
-
+//Model *m;
+Object o;
+float i;
 mat4 projectionMatrix;
 
 mat4 objectExampleMatrix;
@@ -44,8 +46,10 @@ program = loadShaders("src/simple.vert", "src/simple.frag");
 printError("init shader");
 	
 // Upload geometry to the GPU:
-m = LoadModelPlus("src/obj/stanford-bunny.obj");
-printError("load models");
+//m = LoadModelPlus("src/obj/stanford-bunny.objglUniform1i(glGetUniformLocation(program, "skyTex"), 1); ");
+//printError("load models");
+o = Object("src/obj/bunnyplus.obj", "src/obj/grass.tga");
+
 
 // Load textures
 //	LoadTGATextureSimple("textures/maskros512.tga",&texture);
@@ -53,29 +57,38 @@ printError("load models");
 objectExampleMatrix = IdentityMatrix();
 
 // Ladda upp ljus
-  glUniform3fv(glGetUniformLocation(program, "lightSourceDir"), 1, &lightSourceDirection.x);
-  glUniform3fv(glGetUniformLocation(program, "lightSourceColor"),1, &lightSourceColor.x);
+glUniform3fv(glGetUniformLocation(program, "lightSourceDir"), 1, &lightSourceDirection.x);
+glUniform3fv(glGetUniformLocation(program, "lightSourceColor"),1, &lightSourceColor.x);
+
+i=0;
 
 }
 
 void display(void)
 {
-	printError("pre display");
+printError("pre display");
 
-	// clear the screen
-	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+// clear the screen
+glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 
-	//activate the program, and set its variables
-	glUseProgram(program);
-	glUniformMatrix4fv(glGetUniformLocation(program, "projectionMatrix"), 1, GL_TRUE, projectionMatrix.m);
-	mat4 mat = Mult(viewMatrix, objectExampleMatrix);
-	glUniformMatrix4fv(glGetUniformLocation(program, "viewMatrix"), 1, GL_TRUE, mat.m);
+//activate the program, and set its variables
+glUseProgram(program);
+glUniformMatrix4fv(glGetUniformLocation(program, "projectionMatrix"), 1, GL_TRUE, projectionMatrix.m);
+mat4 mat = Mult(viewMatrix, objectExampleMatrix);
+glUniformMatrix4fv(glGetUniformLocation(program, "viewMatrix"), 1, GL_TRUE, mat.m);
 
-	//draw the model
-	DrawModel(m, program, "in_Position", "in_Normal", "in_TexCoord");
-	printError("display");
-	
-	glutSwapBuffers();
+//draw the model
+// DrawModel(m, program, "in_Position", "in_Normal", "in_TexCoord");
+// printError("display");
+o.rotate('y',10*i );
+i = i + 1;
+o.update();
+o.draw(program);
+glutSwapBuffers();
+
+if(i==20){
+i= 0;
+}
 }
 
 void idle()
