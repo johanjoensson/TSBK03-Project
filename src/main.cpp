@@ -5,12 +5,12 @@
 #include "GL_utilities.h"
 #include "zpr.h"
 #include <GL/gl.h>
+#include "world.h"
 #include "object.h"
       
 
 //Model *m;
-Object o;
-float i;
+World w;
 mat4 projectionMatrix;
 
 mat4 objectExampleMatrix;
@@ -48,7 +48,7 @@ printError("init shader");
 // Upload geometry to the GPU:
 //m = LoadModelPlus("src/obj/stanford-bunny.objglUniform1i(glGetUniformLocation(program, "skyTex"), 1); ");
 //printError("load models");
-o = Object("src/obj/bunnyplus.obj", "src/obj/grass.tga");
+ w = World();
 
 
 // Load textures
@@ -60,7 +60,6 @@ objectExampleMatrix = IdentityMatrix();
 glUniform3fv(glGetUniformLocation(program, "lightSourceDir"), 1, &lightSourceDirection.x);
 glUniform3fv(glGetUniformLocation(program, "lightSourceColor"),1, &lightSourceColor.x);
 
-i=0;
 
 }
 
@@ -80,15 +79,9 @@ glUniformMatrix4fv(glGetUniformLocation(program, "viewMatrix"), 1, GL_TRUE, mat.
 //draw the model
 // DrawModel(m, program, "in_Position", "in_Normal", "in_TexCoord");
 // printError("display");
-o.rotate('y',10*i );
-i = i + 1;
-o.update();
-o.draw(program);
-glutSwapBuffers();
 
-if(i==20){
-i= 0;
-}
+w.draw(program);
+glutSwapBuffers();
 }
 
 void idle()
