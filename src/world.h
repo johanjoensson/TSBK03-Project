@@ -6,12 +6,16 @@
 #define WORLD_H
 
 #include "object.h"
+#include "body.h"
+#include "camera.h"
 
 class World {
  protected:
-  Object o;
+  Body o;
  public:
-  //Camera cam;
+  Camera cam;
+  Body ground;
+
   void update();
   void draw(int);
   // void choseObject();

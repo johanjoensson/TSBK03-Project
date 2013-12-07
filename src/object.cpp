@@ -9,84 +9,18 @@
 
 
 Object::Object(){
-reflectivity = 1;
- scale = 1;
  matrix = IdentityMatrix();
- scale_mat = S(scale, scale, scale);
  rot_mat = IdentityMatrix();
  trans_mat = IdentityMatrix();
+ position = vec3(0,0,0);
 }
 
-Object::Object(const char *model)
-{
-  m = LoadModelPlus((char*)model);
-  reflectivity = 1;
-  scale = 1;
-  matrix = IdentityMatrix();
-  scale_mat = S(scale, scale, scale);
-  rot_mat = IdentityMatrix();
-  trans_mat = IdentityMatrix();
-}
 
-Object::Object(const char *model, const char *tex)
-{
-  m = LoadModelPlus((char*)model);
-
-  LoadTGATextureSimple((char*)tex ,&texture);
-  printError("load textures");
- 
-  glActiveTexture(GL_TEXTURE0); // Activate ground texture
-  glBindTexture(GL_TEXTURE_2D, texture); 
-
-  reflectivity = 1;
-  scale = 1;
-  matrix = IdentityMatrix();
-  scale_mat = S(scale, scale, scale);
-  rot_mat = IdentityMatrix();
-  trans_mat = IdentityMatrix();
-}
 
 
 ////////////////////////////////////////////////////
 // FUNCTIONS////////////////////////////////////////
 ////////////////////////////////////////////////////
-
-void Object::set_scale(float s)
-{
-  scale = s;
-  scale_mat = S(scale,scale,scale);
-}
-
-float Object::get_scale()
-{
-  return scale;
-}
-
-void Object::draw(int program){
-  glUniform1i(glGetUniformLocation(program, "objTex"), 0); 
-  DrawModel(m, program, "in_Position", "in_Normal","in_TexCoord");
-}
-
-void Object::rotate(char direction, float angle)
-{
-  switch (direction) {
-  case 'x':
-    // Rotate around x
-    rot_mat = Rx(angle) * rot_mat;
-    update();
-    break;
-  case 'y':
-    // Rotate around y
-    rot_mat = rot_mat * Ry(angle) * rot_mat;
-    update();
-    break;
-  case 'z':
-    // Rotate around z
-    rot_mat = Rz(angle) * rot_mat;
-    update();
-    break;
-  }
-}
 
 void Object::place(vec3 pos)
 {
@@ -100,7 +34,8 @@ void Object::translate(float dx, float dy, float dz)
   update();
 }
 
-void Object::update()
+void Object::translate(vec3 dr)
 {
-  matrix = trans_mat * rot_mat * scale_mat;
+  trans_mat = T(dr.x, dr.y, dr.z)* trans_mat;
+  update();
 }

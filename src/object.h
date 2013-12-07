@@ -1,36 +1,29 @@
 #ifndef OBJECT_H
 #define OBJECT_H
 
+#include "VectorUtils3.h"
+
 class Object{
  protected:
   mat4 rot_mat;
   mat4 trans_mat;
-  mat4 scale_mat;
-  float scale;
- public:
-  Model *m;
-  
+public:
+   
   mat4 matrix;
-  vec3 position = vec3(0,0,0);
+  vec3 position;
   
-  // Functions
-  void set_scale(float);
-  float get_scale(); 
   
-  float reflectivity;
-  GLuint texture;
-  
-  void rotate(char direction, float angle);
   void translate(float dx, float dy, float dz);
+  void translate(vec3 dr);
   void place(vec3 pos);
-  void update();
-  void draw(int);
+
+
+  virtual  void update() =0;
+  virtual  void rotate(char direction, float angle) =0;
+
   
   //Constructors
   Object();
-  Object(const char*);
-  Object(const char*, const char*);
 };
-	
 
 #endif

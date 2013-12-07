@@ -1,7 +1,7 @@
 BIN = bin
 SRC = src
 
-INCLUDE = -I$(SRC)common
+INCLUDE = -I$(SRC)/common
 
 CXX = g++
 CC = gcc
@@ -11,6 +11,7 @@ LDFLAGS = -lm -lGL -lX11
 WARNINGS = -Wall -Wextra -W -pedantic
 
 CXXFLAGS = -g -DGL_GLEXT_PROTOTYPES $(WARNINGS) `sdl-config --cflags` -std=c++0x $(INCLUDE)
+CFLAGS = -g -DGL_GLEXT_PROTOTYPES $(WARNINGS) `sdl-config --cflags` -std=c99 $(INCLUDE)
 
 CXXSOURCES = $(wildcard $(SRC)/*.cpp)
 CSOURCES = $(wildcard $(SRC)/*.c)
@@ -27,7 +28,7 @@ EXE = program
 all: bin src $(EXE)
 
 $(BIN)/%.o: $(SRC)/%.c
-	$(CC) $(CXXFLAGS) -c $? -o $@
+	$(CC) $(CFLAGS) -c $? -o $@
 
 $(BIN)/%.o: $(SRC)/%.cpp
 	$(CXX) $(CXXFLAGS) -c $? -o $@
