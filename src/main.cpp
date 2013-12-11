@@ -20,7 +20,7 @@ World w;
 vec3 lightSourceDirection = vec3{4, 3, 3};
 vec3 lightSourceColor = vec3{1,1,1};
 GLuint program;
-int leftMB;
+bool leftMB;
 
 void keyboard(unsigned char key, int x, int y)
 {
@@ -47,7 +47,7 @@ void keyboard(unsigned char key, int x, int y)
 }
 
 bool inside_range(float x, float y, int mouse_x, int mouse_y){
-  if((abs(x - mouse_x) < 5) && (abs(y - mouse_y) < 5)){
+  if((abs(x - mouse_x) < 2) && (abs(y - mouse_y) < 2)){
     return true;
   }
 }
@@ -55,14 +55,13 @@ bool inside_range(float x, float y, int mouse_x, int mouse_y){
 void MouseClickFunc( int button, int state, int x, int y) {
   float mouse_x = (window_width/2 - x)/(window_width/2);
   float mouse_y = (window_height/2 - y)/(window_height/2);
-  if ( button==GLUT_LEFT_BUTTON && state==GLUT_DOWN ) {
+ 
+ if ( button==GLUT_LEFT_BUTTON && state==GLUT_DOWN ) {
     if(inside_range(w.o.position.x, w.o.position.y, mouse_x, mouse_y)){
       leftMB = !leftMB;
     }
-    if(leftMB == 1){
-      w.o.place(vec3(mouse_x, mouse_y, w.cam.position.z - 5));
-    }
   }
+
 } 
 
 
@@ -73,7 +72,7 @@ void init(void)
 dumpInfo();
 
 //Init MouseButton state
- leftMB = 0;
+ leftMB = false;
 
 // GL inits
 glClearColor(0.2,0.2,0.5,0);
@@ -148,6 +147,11 @@ void mouse_passive_move(int x, int y)
 	printf("Angles: alpha %f, beta %f\n", alpha, beta);
 //	w.cam.h_rotate(mouse_x);
 //	w.cam.v_rotate(beta);
+
+
+  if(leftMB){
+    w.o.place(w.cam.position + w.cam.forward);
+  }
 }
 
 
