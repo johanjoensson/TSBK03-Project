@@ -34,6 +34,7 @@ void Body::set_scale(float s)
 {
   scale = s;
   scale_mat = S(scale,scale,scale);
+  update();
 }
 
 float Body::get_scale()
