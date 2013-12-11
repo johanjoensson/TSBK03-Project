@@ -12,8 +12,8 @@
 int window_width = 300;
 int window_height = 300;
 
-int old_mouse_x = 0;
-int old_mouse_y = 0;
+int old_mouse_x = 150;
+int old_mouse_y = 150;
 //Model *m;
 World w;
 
@@ -109,21 +109,15 @@ void mouse_passive_move(int x, int y)
 	int win_width = window_width;
 	int win_height = window_height;
 
-	/* 
-	 * Determine mouse position relative to the center of the window
-	 * Also scale all distances to -1 -> 1 
-	 */
-	float mouse_x = ((float)win_width - 2*x)/win_width - old_mouse_x;
-	float mouse_y = ((float)2*y - win_height)/win_height - old_mouse_y;
-	old_mouse_x += mouse_x;
-	old_mouse_y += mouse_y;
+	float dx = ((float)old_mouse_x - x)/window_width;
+	float dy = ((float)y - old_mouse_y)/window_height;
 
-	float alpha = atan(mouse_x)/32;
-	float beta = atan(mouse_y)/32;
+	old_mouse_x = x;
+	old_mouse_y = y;
 
-	printf("Angles: alpha %f, beta %f\n", alpha, beta);
-//	w.cam.h_rotate(mouse_x);
-//	w.cam.v_rotate(beta);
+	printf("mouse moved %f, %f\n", dx, dy);
+	w.cam.h_rotate(dx*M_PI*2);
+	w.cam.v_rotate(dy*M_PI*2);
 }
 
 

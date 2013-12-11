@@ -25,10 +25,15 @@ Camera::Camera()
 void Camera::update()
 {
     position = trans_mat*position;
+    if(position.y < 0)
+    	position.y = 0;
     forward = rot_mat*forward;
     up = rot_mat*up;
     
     view_matrix = lookAtv(position,VectorAdd(position,forward),up); 
+
+    trans_mat = IdentityMatrix();
+    rot_mat = IdentityMatrix();
 }
 
 void Camera::rotate(char direction, float angle)
@@ -54,14 +59,14 @@ void Camera::h_rotate(float angle)
 {
 	rot_mat = ArbRotate(up, angle);
 	update();
-	rot_mat = IdentityMatrix();
 }
 
 void Camera::v_rotate(float angle)
 {
-	rot_mat = ArbRotate(forward, angle);
+	vec3 right = CrossProduct(up, forward);
+	rot_mat = ArbRotate(right, angle);
 	update();
-	rot_mat = IdentityMatrix();
+
 }
 
 void Camera::rotate(vec3 dir, float angle)
