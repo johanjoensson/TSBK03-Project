@@ -3,11 +3,17 @@
 #include "loadobj.h"
 #include "GL_utilities.h"
 #include <GL/gl.h>
+#include <cmath>
 #include "world.h"
 #include "object.h"
 #include "body.h"
       
 
+int window_width = 300;
+int window_height = 300;
+
+int old_mouse_x = 0;
+int old_mouse_y = 0;
 //Model *m;
 World w;
 
@@ -92,7 +98,32 @@ glutPostRedisplay();
 
 void window_reshape(int width, int height)
 {
+	window_width = width;
+	window_height = height;
 	glViewport(0,0,width, height);
+}
+
+void mouse_passive_move(int x, int y)
+{
+	/* Dimensions of the window */
+	int win_width = window_width;
+	int win_height = window_height;
+
+	/* 
+	 * Determine mouse position relative to the center of the window
+	 * Also scale all distances to -1 -> 1 
+	 */
+	float mouse_x = ((float)win_width - 2*x)/win_width - old_mouse_x;
+	float mouse_y = ((float)2*y - win_height)/win_height - old_mouse_y;
+	old_mouse_x += mouse_x;
+	old_mouse_y += mouse_y;
+
+	float alpha = atan(mouse_x)/32;
+	float beta = atan(mouse_y)/32;
+
+	printf("Angles: alpha %f, beta %f\n", alpha, beta);
+//	w.cam.h_rotate(mouse_x);
+//	w.cam.v_rotate(beta);
 }
 
 
@@ -106,6 +137,7 @@ glutDisplayFunc(display);
 glutReshapeFunc(&window_reshape);
 glutIdleFunc(idle);
 glutKeyboardUpFunc(&keyboard);
+glutPassiveMotionFunc(mouse_passive_move);
 init ();
 glutMainLoop();
 }

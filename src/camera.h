@@ -22,6 +22,8 @@ class Camera: public Object{
         void update();
         void rotate(char direction, float angle);
         void rotate(vec3 dir, float angle);
+	void v_rotate(float angle);
+	void h_rotate(float angle);
 
         void draw(int program);
 
