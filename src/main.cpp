@@ -6,7 +6,7 @@
 #include "world.h"
 #include "object.h"
 #include "body.h"
-      
+#include "math.h"      
 
 //Model *m;
 World w;
@@ -14,6 +14,7 @@ World w;
 vec3 lightSourceDirection = vec3{4, 3, 3};
 vec3 lightSourceColor = vec3{1,1,1};
 GLuint program;
+int leftMB;
 
 void keyboard(unsigned char key, int x, int y)
 {
@@ -39,11 +40,33 @@ void keyboard(unsigned char key, int x, int y)
     }
 }
 
+bool inside_range(float x, float y, int mouse_x, int mouse_y){
+  if((abs(x - mouse_x) < 5) && (abs(y - mouse_y) < 5)){
+    return true;
+  }
+}
+
+void MouseClickFunc( int button, int state, int x, int y) {
+	
+  if ( button==GLUT_LEFT_BUTTON && state==GLUT_DOWN ) {
+    if(inside_range(w.o.position.x, w.o.position.y, x, y)){
+      leftMB = !leftMB;
+    }
+    if(leftMB == 1){
+      w.o.place(vec3((float)(x), (float)(y), w.cam.position.z - 5));
+    }
+  }
+} 
+
+
 
 void init(void)
 {
 
 dumpInfo();
+
+//Init MouseButton state
+ leftMB = 0;
 
 // GL inits
 glClearColor(0.2,0.2,0.5,0);
@@ -93,13 +116,14 @@ glutPostRedisplay();
 
 int main(int argc, char *argv[])
 {
-glutInit(&argc, argv);
-glutInitDisplayMode(GLUT_RGBA|GLUT_DEPTH|GLUT_DOUBLE);
-glutInitContextVersion(3, 2);
-glutCreateWindow ("Simple program, start of camera stuff");
-glutDisplayFunc(display); 
-glutIdleFunc(idle);
-glutKeyboardUpFunc(&keyboard);
-init ();
-glutMainLoop();
+  glutInit(&argc, argv);
+  glutInitDisplayMode(GLUT_RGBA|GLUT_DEPTH|GLUT_DOUBLE);
+  glutInitContextVersion(3, 2);
+  glutCreateWindow ("Simple program, start of camera stuff");
+  glutDisplayFunc(display); 
+  glutIdleFunc(idle);
+  glutKeyboardUpFunc(&keyboard);
+  glutMouseFunc(&MouseClickFunc);
+    init ();
+  glutMainLoop();
 }
