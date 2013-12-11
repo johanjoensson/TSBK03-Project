@@ -7,7 +7,7 @@
 #include "world.h"
 #include "object.h"
 #include "body.h"
-      
+#include "math.h"      
 
 int window_width = 300;
 int window_height = 300;
@@ -20,6 +20,7 @@ World w;
 vec3 lightSourceDirection = vec3{4, 3, 3};
 vec3 lightSourceColor = vec3{1,1,1};
 GLuint program;
+bool leftMB;
 
 void keyboard(unsigned char key, int x, int y)
 {
@@ -45,11 +46,33 @@ void keyboard(unsigned char key, int x, int y)
     }
 }
 
+bool inside_range(float x, float y, int mouse_x, int mouse_y){
+  if((abs(x - mouse_x) < 2) && (abs(y - mouse_y) < 2)){
+    return true;
+  }
+}
+
+void MouseClickFunc( int button, int state, int x, int y) {
+  float mouse_x = (window_width/2 - x)/(window_width/2);
+  float mouse_y = (window_height/2 - y)/(window_height/2);
+ 
+ if ( button==GLUT_LEFT_BUTTON && state==GLUT_DOWN ) {
+    if(inside_range(w.o.position.x, w.o.position.y, mouse_x, mouse_y)){
+      leftMB = !leftMB;
+    }
+  }
+
+} 
+
+
 
 void init(void)
 {
 
 dumpInfo();
+
+//Init MouseButton state
+ leftMB = false;
 
 // GL inits
 glClearColor(0.2,0.2,0.5,0);
@@ -109,8 +132,8 @@ void mouse_passive_move(int x, int y)
 	int win_width = window_width;
 	int win_height = window_height;
 
-	float dx = ((float)old_mouse_x - x)/window_width;
-	float dy = ((float)y - old_mouse_y)/window_height;
+	float dx = ((float)old_mouse_x - x)/win_width;
+	float dy = ((float)y - old_mouse_y)/win_height;
 
 	old_mouse_x = x;
 	old_mouse_y = y;
@@ -118,6 +141,9 @@ void mouse_passive_move(int x, int y)
 	printf("mouse moved %f, %f\n", dx, dy);
 	w.cam.h_rotate(dx*M_PI*2);
 	w.cam.v_rotate(dy*M_PI*2);
+	if(leftMB){
+		w.o.place(w.cam.position + w.cam.forward);
+	}
 }
 
 
@@ -132,6 +158,7 @@ glutReshapeFunc(&window_reshape);
 glutIdleFunc(idle);
 glutKeyboardUpFunc(&keyboard);
 glutPassiveMotionFunc(mouse_passive_move);
+ glutMouseFunc(&MouseClickFunc);
 init ();
 glutMainLoop();
 }
