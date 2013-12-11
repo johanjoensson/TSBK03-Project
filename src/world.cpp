@@ -8,7 +8,7 @@ World::World()
   cam = Camera();
   ground = Body("src/obj/untitled.obj", "src/obj/grass.tga");
   ground.place(vec3(0,-1,0));
-  ground.scale(1000);
+  ground.set_scale(1000);
 }
 
 void World::draw(int program)

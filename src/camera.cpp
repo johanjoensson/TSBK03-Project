@@ -50,6 +50,11 @@ void Camera::rotate(char direction, float angle)
     update();
 }
 
+void Camera::rotate(vec3 dir, float angle)
+{
+	rot_mat = ArbRotate(dir, angle);
+	update();
+}
 void Camera::draw(int program)
 {
     glUniformMatrix4fv(glGetUniformLocation(program, "projectionMatrix"), 1, GL_TRUE, projectionMatrix.m);

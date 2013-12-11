@@ -90,6 +90,11 @@ void idle()
 glutPostRedisplay();
 }
 
+void window_reshape(int width, int height)
+{
+	glViewport(0,0,width, height);
+}
+
 
 int main(int argc, char *argv[])
 {
@@ -98,6 +103,7 @@ glutInitDisplayMode(GLUT_RGBA|GLUT_DEPTH|GLUT_DOUBLE);
 glutInitContextVersion(3, 2);
 glutCreateWindow ("Simple program, start of camera stuff");
 glutDisplayFunc(display); 
+glutReshapeFunc(&window_reshape);
 glutIdleFunc(idle);
 glutKeyboardUpFunc(&keyboard);
 init ();
