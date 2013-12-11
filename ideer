@@ -1,0 +1,10 @@
+|||||||||||||||||||||||||||||||||||||||||||||||
+>>>>>>>>>>>>>Värdekasst & Sylvasst<<<<<<<<<<<<
+|||||||||||||||||||||||||||||||||||||||||||||||
+1. Ang. att välja objekt
+
+i. Alla objekt får en bool leftMB, om den är sann
+   så har vi klickat på objektet och det objeketet ska
+   följa musen.
+ii. När man vänsterklickar med musen så ska det, om mer än
+    ett objekt finns inom inside_range, objekt närmast kameran väljas
