@@ -42,6 +42,7 @@ float Body::get_scale()
 }
 void Body::draw(int program){
   glUniform1i(glGetUniformLocation(program, "objTex"), 0); 
+  glUniformMatrix4fv(glGetUniformLocation(program, "modelMatrix"), 1, GL_TRUE, matrix.m);
   DrawModel(m, program, "in_Position", "in_Normal","in_TexCoord");
 }
 

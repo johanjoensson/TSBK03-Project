@@ -1,36 +1,18 @@
 #include "world.h"
 #include <stdio.h>
-GLfloat ground_arr[] = {        -1000, -1, 1000,
-                        -1000, -1, -1000,
-                        1000, -1, -1000,
-                        1000, -1, -1000,
-                        1000, -1, 1000,
-                        -1000, -1, 1000 };
-GLfloat gNormal[] = { 0.0f, 0.0f, 0.0f,
-                 0.0f, 0.0f, 0.0f,
-                 0.0f, 0.0f, 0.0f,
-                 0.0f, 0.0f, 0.0f,
-                 0.0f, 0.0f, 0.0f,
-                 0.0f, 0.0f, 0.0f };
 
-GLfloat ground_tex_coord[6][2] = {        {1.0, 0.0},
-                                        {0.0, 0.0},
-                                        {0.0, 1.0},
-                                        {0.0, 1.0},
-                                        {1.0, 1.0},
-                                        {1.0, 0.0} };
-GLuint ground_tex;
-unsigned int groundVertexArrayObjID;
-unsigned int gNormalArrayObjID;
-
-World::World(){
+World::World()
+{
   o = Body("src/obj/bunnyplus.obj", "src/obj/grass.tga");
+  o.rotate('y', 3.14/2);
   cam = Camera();
-  ground = Body("src/obj/untitled.obj");
-  ground.set_scale(1000);
+  ground = Body("src/obj/bunnyplus.obj", "src/obj/grass.tga");
+  ground.set_scale(0.5);
+  ground.update();
 }
 
-void World::draw(int program){
+void World::draw(int program)
+{
     cam.draw(program);
     ground.draw(program);
     
@@ -38,7 +20,8 @@ void World::draw(int program){
   // update();
 } 
 
-void World::update(){
+void World::update()
+{
 
 //  o.translate( 1,  1, 1);
 
