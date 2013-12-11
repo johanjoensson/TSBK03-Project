@@ -11,9 +11,9 @@
 
 class World {
  protected:
-  Body o;
  public:
   Camera cam;
+  Body o;
   Body ground;
 
   void update();
