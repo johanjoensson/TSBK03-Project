@@ -16,7 +16,7 @@ out vec2 ex_TexCoord;
 void main(void)
 {   
 	ex_TexCoord = in_TexCoord;
-	ex_Normal =  mat3(viewMatrix*modelMatrix)*in_Normal;
+	ex_Normal =  mat3(modelMatrix)*in_Normal;
 	gl_Position = projectionMatrix*viewMatrix*modelMatrix*vec4(in_Position, 1.0);
-	ex_Position = mat3(viewMatrix*modelMatrix)*in_Position; 
+	ex_Position = vec3(modelMatrix*vec4(in_Position, 1.0)); 
 }

@@ -17,7 +17,7 @@ int old_mouse_y = 150;
 //Model *m;
 World w;
 
-vec3 lightSourceDirection = vec3{4, 3, 3};
+vec3 lightSourceDirection = vec3{0, 10, 0};
 vec3 lightSourceColor = vec3{1,1,1};
 GLuint program;
 bool leftMB;
@@ -138,7 +138,6 @@ void mouse_passive_move(int x, int y)
 	old_mouse_x = x;
 	old_mouse_y = y;
 
-	printf("mouse moved %f, %f\n", dx, dy);
 	w.cam.h_rotate(dx*M_PI*2);
 	w.cam.v_rotate(dy*M_PI*2);
 	if(leftMB){

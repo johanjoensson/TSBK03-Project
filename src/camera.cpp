@@ -76,6 +76,7 @@ void Camera::rotate(vec3 dir, float angle)
 }
 void Camera::draw(int program)
 {
+    glUniform3fv(glGetUniformLocation(program, "cam_pos"), 1, &position.x);
     glUniformMatrix4fv(glGetUniformLocation(program, "projectionMatrix"), 1, GL_TRUE, projectionMatrix.m);
     glUniformMatrix4fv(glGetUniformLocation(program, "viewMatrix"), 1, GL_TRUE, view_matrix.m);
 }
