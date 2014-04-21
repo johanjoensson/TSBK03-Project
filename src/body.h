@@ -2,7 +2,8 @@
 #define BODY_H
 
 #include "object.h"
-#include "loadobj.h"
+//#include "loadobj.h"
+#include "assimp_loader.h"
 #include "LoadTGA.h"
 #include "GL_utilities.h"
 
@@ -11,7 +12,8 @@ class Body: public Object{
         mat4 scale_mat;
         float scale;
     public:
-        Model *m;
+//        Model *m;
+	model *m;
         // Functions
         void set_scale(float);
         float get_scale(); 
