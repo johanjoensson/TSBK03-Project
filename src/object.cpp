@@ -1,6 +1,6 @@
 #include "MicroGlut.h"
 #include "VectorUtils3.h"
-#include "loadobj.h"
+//#include "loadobj.h"
 #include "LoadTGA.h"
 #include "GL_utilities.h"
 #include "zpr.h"

@@ -9,7 +9,8 @@ Body::Body()
 
 Body::Body(const char *model)
 {
-  m = LoadModelPlus((char*)model);
+//  m = LoadModelPlus((char*)model);
+  m = *load_model_adjacency((char*)model);
   reflectivity = 1;
   scale = 1;
   scale_mat = S(scale, scale, scale);
@@ -17,7 +18,8 @@ Body::Body(const char *model)
 
 Body::Body(const char *model, const char *tex)
 {
-  m = LoadModelPlus((char*)model);
+// m = LoadModelPlus((char*)model);
+  m = *load_model_adjacency((char*)model);
 
   LoadTGATextureSimple((char*)tex ,&texture);
   printError("load textures");
@@ -44,7 +46,8 @@ float Body::get_scale()
 void Body::draw(int program){
   glUniform1i(glGetUniformLocation(program, "objTex"), 0); 
   glUniformMatrix4fv(glGetUniformLocation(program, "modelMatrix"), 1, GL_TRUE, matrix.m);
-  DrawModel(m, program, "in_Position", "in_Normal","in_TexCoord");
+//  DrawModel(m, program, "in_Position", "in_Normal","in_TexCoord");
+  draw_model_adjacency(m, program, "in_Position", "in_Normal","in_TexCoord", NULL);
 }
 
 void Body::rotate(char direction, float angle)
