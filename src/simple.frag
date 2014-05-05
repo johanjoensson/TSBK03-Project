@@ -7,7 +7,7 @@ in vec2 f_TexCoord;
 out vec4 out_Color;
 
 uniform vec3 lightSourceColor;
-uniform vec3 lightSourceDir;
+uniform vec4 lightSourceDir;
 uniform vec3 cam_pos;
 uniform sampler2D objTex;
 
@@ -21,7 +21,7 @@ void main(void)
      	vec4 diffuse = vec4(0,0,0,0);
 	vec4 specular = vec4(0,0,0,0);
      	/* Vector from surface to light source */
-     	vec3 direction = f_Position - lightSourceDir; 
+     	vec3 direction = f_Position - vec3(lightSourceDir); 
 
      	/* Diffuse shading */
      	shade = dot(normalize(f_Normal), normalize(-direction));

@@ -18,7 +18,7 @@ void main(void)
 	ex_TexCoord = in_TexCoord;
 	ex_Normal =  mat3(modelMatrix)*in_Normal;
 	
-	gl_Position = projectionMatrix*viewMatrix*modelMatrix*vec4(in_Position, 1.0); 
-//	gl_Position = viewMatrix*modelMatrix*vec4(in_Position,1.0); //For use in Geom-shader
+	//gl_Position = projectionMatrix*viewMatrix*modelMatrix*vec4(in_Position, 1.0); 
+	gl_Position = viewMatrix*modelMatrix*vec4(in_Position,1.0); //For use in Geom-shader
 	ex_Position = vec3(modelMatrix*vec4(in_Position, 1.0)); 
 }

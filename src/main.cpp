@@ -17,8 +17,9 @@ int old_mouse_y = 150;
 //Model *m;
 World w;
 
-vec3 lightSourceDirection = vec3{0, 10, 0};
+vec4 lightSourceDirection = vec4{5,3,-5,1};
 vec3 lightSourceColor = vec3{1,1,1};
+GLfloat t;
 GLuint program;
 bool leftMB;
 
@@ -70,7 +71,7 @@ void init(void)
 {
   
   dumpInfo();
-
+  t=0;
   //Init MouseButton state
   leftMB = false;
  
@@ -80,7 +81,6 @@ void init(void)
   glEnable(GL_CULL_FACE);
   glCullFace(GL_BACK);
   printError("GL inits");
-
   // Load and compile shader
   program = loadShadersG("src/simple.vert", "src/simple.frag", "src/simple.geom");
   printError("init shader");
@@ -89,8 +89,7 @@ void init(void)
 
 
 
-  // Ladda upp ljus
-  glUniform3fv(glGetUniformLocation(program, "lightSourceDir"), 1, &lightSourceDirection.x);
+  // Ladda upp ljusfarg
   glUniform3fv(glGetUniformLocation(program, "lightSourceColor"),1, &lightSourceColor.x);
 
 
@@ -105,8 +104,15 @@ void display(void)
 
   //activate the program, and set its variables
   glUseProgram(program);
-
-
+  lightSourceDirection.x = (float)(sin(t*M_PI/180));
+  lightSourceDirection.y= 3.0f;
+  lightSourceDirection.z= (float)(5*cos(t*M_PI/180));
+  lightSourceDirection.w= 2.0f;
+  glUniform4fv(glGetUniformLocation(program, "lightSourceDir"), 1, &lightSourceDirection.x);
+  t+=0.02;
+  if(t>359)
+    {
+      t=0.0;}
   // Draw the scene
   w.draw(program);
   glutSwapBuffers();
@@ -144,7 +150,6 @@ void mouse_passive_move(int x, int y)
     w.o.place(w.cam.position + w.cam.forward);
   }
 }
-
 
 int main(int argc, char *argv[])
 {
