@@ -6,7 +6,7 @@ INCLUDE = -I$(SRC)/common
 CXX = g++
 CC = gcc
 
-LDFLAGS = -lm -lGL -lX11
+LDFLAGS = -lm -lGL -lX11 -lassimp `sdl-config --libs`
 
 WARNINGS = -Wall -Wextra -W -pedantic
 

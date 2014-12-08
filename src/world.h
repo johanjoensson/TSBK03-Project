@@ -14,6 +14,7 @@ class World {
  public:
   Camera cam;
   Body o;
+  Body p;
   Body ground;
 
   void update();
