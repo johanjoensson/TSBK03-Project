@@ -1,13 +1,13 @@
 BIN = bin
 SRC = src
 
-INCLUDE = -I$(SRC)/common
+INCLUDE = -I$(SRC)/common -Isrc/assimp/include/ 
+
 
 CXX = g++
 CC = gcc
 
-LDFLAGS = -lm -lGL -lX11 -lassimp `sdl-config --libs`
-
+LDFLAGS = -lm -lGL -lX11 -Lsrc/assimp/lib -lassimp `sdl-config --libs` -Wl,-rpath=src/assimp/lib
 WARNINGS = -Wall -Wextra -W -pedantic
 
 CXXFLAGS = -g -DGL_GLEXT_PROTOTYPES $(WARNINGS) `sdl-config --cflags` -std=c++0x $(INCLUDE)

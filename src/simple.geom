@@ -2,33 +2,13 @@
 //#extension GL_ARB_geometry_shader4 : enable
 layout(triangles_adjacency) in;
 layout(triangle_strip, max_vertices=18) out;
-in vec3 ex_Position[];
-in vec3 ex_Normal[];
-in vec2 ex_TexCoord[];
-out vec3 f_Normal;
-out vec2 f_TexCoord;	     
-out vec3 f_Position;
+
 uniform vec4 lightSourceDir;
 uniform mat4 projectionMatrix;
 
+
 void main()
 {
-
-  //For pass through
-  for(int i = 0; i < gl_in.length(); i++)
-    {
-      // copy attributes
-      gl_Position = gl_in[i].gl_Position;
-      f_Normal = ex_Normal[i];
-      f_TexCoord = ex_TexCoord[i]; 
-      f_Position = ex_Position[i];
- 
-      // done with the vertex
-      EmitVertex();
-    }
-  EndPrimitive();
-
-
   vec3 ns[3];
   vec3 d[3];
   vec3 or_pos[3]; // Triangle oriented toward light source  
@@ -79,14 +59,14 @@ void main()
     d[0] =lightSourceDir.xyz-lightSourceDir.w*vec3(gl_in[v0].gl_Position);
     d[1] =lightSourceDir.xyz-lightSourceDir.w*vec3(gl_in[nb].gl_Position);
     d[2] =lightSourceDir.xyz-lightSourceDir.w*vec3(gl_in[v1].gl_Position);
-  /*   // Extrude the edge if it does not have a   */
-  /*   // neighbor, or if it's a possible silhouette.   */
+     // Extrude the edge if it does not have a   
+    // neighbor, or if it's a possible silhouette.   
     if ( gl_in[nb].gl_Position.w < 1e-3 ||
   	 ( faces_light != (dot(ns[0],d[0])>0 ||
   			   dot(ns[1],d[1])>0 ||
   			   dot(ns[2],d[2])>0) ))
       {
-  /* 	// Make sure sides are oriented correctly.   */
+   	// Make sure sides are oriented correctly.   
   	int i0 = faces_light ? v0 : v1;
   	int i1 = faces_light ? v1 : v0;
   	v[0] = gl_in[i0].gl_Position;
@@ -104,7 +84,5 @@ void main()
   	EmitVertex(); EndPrimitive();
       }
   }
-  
- 
 
 }

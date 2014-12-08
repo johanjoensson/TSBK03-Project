@@ -3,20 +3,20 @@
 
 Camera::Camera()
 {
-    far = 1000;
-    near = 0.1;
-    right = 1;
-    left = -1;
-    top = 1;
-    bottom = -1;
+    far = 30;
+    near = 1;
+    right = 0.5;
+    left = -0.5;
+    top = 0.5;
+    bottom = -0.5;
 
 
-    projectionMatrix = perspective(90, 1.0, 0.1, 1000);
-//    projectionMatrix = frustum(left, right, bottom, top, near, far);
+    //projectionMatrix = perspective(90, 1.0, 0.1, 1000);
+    projectionMatrix = frustum(left, right, bottom, top, near, far);
 
     forward = vec3(0,0,-1);
     up = vec3(0,1,0);
-    position = vec3(0,0,1);
+    position = vec3(0,0,0);
 
 
     view_matrix = lookAtv(position,forward,up); 
@@ -30,7 +30,7 @@ void Camera::update()
     forward = rot_mat*forward;
     up = rot_mat*up;
     
-    view_matrix = lookAtv(position,VectorAdd(position,forward),up); 
+    view_matrix = lookAtv(position,forward,up); 
 
     trans_mat = IdentityMatrix();
     rot_mat = IdentityMatrix();

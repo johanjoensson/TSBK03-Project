@@ -9,18 +9,17 @@
 #include "body.h"
 #include "math.h"      
 
-int window_width = 300;
-int window_height = 300;
+int window_width = 400;
+int window_height = 400;
 
 int old_mouse_x = 150;
 int old_mouse_y = 150;
 //Model *m;
 World w;
-
-vec4 lightSourceDirection = vec4{5,3,-5,1};
+vec4 lightSourceDirection = vec4{0,8,0,1.0};
 vec3 lightSourceColor = vec3{1,1,1};
 GLfloat t;
-GLuint program;
+GLuint program, shadows;
 bool leftMB;
 
 void keyboard(unsigned char key, int x, int y)
@@ -82,7 +81,8 @@ void init(void)
   glCullFace(GL_BACK);
   printError("GL inits");
   // Load and compile shader
-  program = loadShadersG("src/simple.vert", "src/simple.frag", "src/simple.geom");
+  shadows = loadShadersG("src/shadows.vert", "src/shadows.frag", "src/shadows.geom");
+  program =  loadShadersG("src/simple.vert", "src/simple.frag", "src/pass_through.geom");
   printError("init shader");
  
   w = World();
@@ -103,18 +103,18 @@ void display(void)
   glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 
   //activate the program, and set its variables
-  glUseProgram(program);
-  lightSourceDirection.x = (float)(sin(t*M_PI/180));
+    glUseProgram(program);
+  /*  lightSourceDirection.x = (float)(sin(t*M_PI/180));
   lightSourceDirection.y= 3.0f;
   lightSourceDirection.z= (float)(5*cos(t*M_PI/180));
-  lightSourceDirection.w= 2.0f;
+  lightSourceDirection.w= 2.0f; */
   glUniform4fv(glGetUniformLocation(program, "lightSourceDir"), 1, &lightSourceDirection.x);
-  t+=0.02;
-  if(t>359)
-    {
-      t=0.0;}
+  
   // Draw the scene
-  w.draw(program);
+    w.draw(program);
+  glUseProgram(shadows);
+  glUniform4fv(glGetUniformLocation(shadows, "lightSourceDir"), 1, &lightSourceDirection.x);
+  w.draw(shadows);
   glutSwapBuffers();
 }
 
@@ -139,7 +139,7 @@ void mouse_passive_move(int x, int y)
   int win_height = window_height;
 
   float dx = ((float)old_mouse_x - x)/win_width;
-  float dy = ((float)y - old_mouse_y)/win_height;
+  float dy = ((float) old_mouse_y - y)/win_height;
 
   old_mouse_x = x;
   old_mouse_y = y;
