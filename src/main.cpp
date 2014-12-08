@@ -83,6 +83,7 @@ printError("GL inits");
 
 // Load and compile shader
 program = loadShaders("src/simple.vert", "src/simple.frag");
+//program = loadShadersG("src/simple.vert", "src/simple.frag", "src/simple.geom");
 printError("init shader");
 	
  w = World();
