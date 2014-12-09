@@ -34,6 +34,6 @@ void main(void)
 	shade = clamp(shade, 0,1);
 	specular = out_Color*vec4(shade*lightSourceColor, 1.0);
      	
-	out_Color = diffuse;
+	out_Color += diffuse;
 	out_Color += specular;
 }

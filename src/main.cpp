@@ -75,7 +75,7 @@ void init(void)
   leftMB = false;
  
   // GL inits
-  glClearColor(0.2,0.2,0.5,0);
+  glClearColor(0.0,0.0,0.0,0);
   glEnable(GL_DEPTH_TEST);
   glEnable(GL_CULL_FACE);
   glCullFace(GL_BACK);
@@ -100,21 +100,47 @@ void display(void)
   printError("pre display");
 
   // clear the screen
-  glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+  // glStencilMask(0xFF);//???
+  glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT|GL_STENCIL_BUFFER_BIT);  
 
-  //activate the program, and set its variables
-    glUseProgram(program);
-  /*  lightSourceDirection.x = (float)(sin(t*M_PI/180));
-  lightSourceDirection.y= 3.0f;
-  lightSourceDirection.z= (float)(5*cos(t*M_PI/180));
-  lightSourceDirection.w= 2.0f; */
+  glUseProgram(program);
   glUniform4fv(glGetUniformLocation(program, "lightSourceDir"), 1, &lightSourceDirection.x);
-  
-  // Draw the scene
-    w.draw(program);
-  glUseProgram(shadows);
+
+  glColorMask(GL_FALSE,GL_FALSE,GL_FALSE,GL_FALSE);
+  //  w.draw(program);
+
+  // Set up the stencil buffer
+  //glDepthMask(GL_FALSE);
+  glEnable(GL_STENCIL_TEST);
+
+  glUseProgram(shadows); 
   glUniform4fv(glGetUniformLocation(shadows, "lightSourceDir"), 1, &lightSourceDirection.x);
+ 
+  glCullFace(GL_FRONT);
+  glStencilFunc(GL_ALWAYS,0,0xFFFFFFFF);
+  glStencilOp(GL_KEEP,GL_KEEP,GL_INCR);
+
   w.draw(shadows);
+
+  glCullFace(GL_BACK);
+  glStencilOp(GL_KEEP,GL_KEEP,GL_DECR);
+  w.draw(shadows);   
+ 
+  // Reset depth and color 
+  glColorMask(GL_TRUE,GL_TRUE,GL_TRUE,GL_TRUE);
+  glDepthMask(GL_TRUE);
+  //glStencilMask(0x00); //???
+  
+  //draw scene
+  glCullFace(GL_BACK);
+  glUseProgram(program);
+  glUniform4fv(glGetUniformLocation(program, "lightSourceDir"), 1, &lightSourceDirection.x);
+
+  glStencilFunc(GL_EQUAL,0,0xFFFFFFFF);
+  glStencilOp(GL_KEEP,GL_KEEP,GL_KEEP);
+  w.draw(program);
+
+  glDisable(GL_STENCIL_TEST);
   glutSwapBuffers();
 }
 
@@ -154,7 +180,7 @@ void mouse_passive_move(int x, int y)
 int main(int argc, char *argv[])
 {
   glutInit(&argc, argv);
-  glutInitDisplayMode(GLUT_RGBA|GLUT_DEPTH|GLUT_DOUBLE);
+  glutInitDisplayMode(GLUT_RGBA|GLUT_DEPTH|GLUT_DOUBLE|GLUT_STENCIL);
   glutInitContextVersion(3, 2);
   glutCreateWindow ("Simple program, start of camera stuff");
   glutDisplayFunc(display); 
