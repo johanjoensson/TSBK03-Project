@@ -13,18 +13,18 @@ World::World()
 
   cam = Camera();
   ground = Body("src/obj/untitled.obj", "src/obj/grass.tga");
-  ground.place(vec3(0,-1,0));
+  ground.place(vec3(0,-0.5,0));
   ground.set_scale(1000);
 }
 
 void World::draw(int program)
 {
-    cam.draw(program);
+   cam.draw(program);
 
    ground.draw(program);
     
-   //o.draw(program);
-    p.draw(program);
+   o.draw(program);
+   p.draw(program);
 } 
 
 void World::update()

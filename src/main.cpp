@@ -17,7 +17,7 @@ int old_mouse_y = 150;
 //Model *m;
 World w;
 vec4 lightSourceDirection = vec4{0,8,0,1.0};
-vec3 lightSourceColor = vec3{1,1,1};
+vec3 lightSourceColor = vec3{1,0,0.5};
 GLfloat t;
 GLuint program, shadows;
 bool leftMB;
@@ -27,16 +27,16 @@ void keyboard(unsigned char key, int x, int y)
   vec3 left = CrossProduct(w.cam.up, w.cam.forward);
   switch(key){
   case 'w':
-    w.cam.place(w.cam.forward);
+    w.cam.place(0.5*w.cam.forward);
     break;
   case 's':
-    w.cam.place(VectorSub(vec3(0,0,0),w.cam.forward));
+    w.cam.place(0.5*VectorSub(vec3(0,0,0),w.cam.forward));
     break;
   case 'a':
-    w.cam.place(left);
+    w.cam.place(0.5*left);
     break;
   case 'd':
-    w.cam.place(VectorSub(vec3(0,0,0),left));
+    w.cam.place(0.5*VectorSub(vec3(0,0,0),left));
     break;
   case  27:
     exit(0);
@@ -100,47 +100,49 @@ void display(void)
   printError("pre display");
 
   // clear the screen
-  // glStencilMask(0xFF);//???
   glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT|GL_STENCIL_BUFFER_BIT);  
 
   glUseProgram(program);
   glUniform4fv(glGetUniformLocation(program, "lightSourceDir"), 1, &lightSourceDirection.x);
 
+  // Initialise depth buffer and stencil buffer
   glColorMask(GL_FALSE,GL_FALSE,GL_FALSE,GL_FALSE);
-  //  w.draw(program);
+  glEnable(GL_STENCIL_TEST);
+  glStencilFunc(GL_NEVER,0,0xFFFFFFFF);	//Write 0's in stencil buffer
+  glStencilOp(GL_REPLACE,GL_KEEP,GL_KEEP);	// See above
+  w.draw(program);
 
   // Set up the stencil buffer
-  //glDepthMask(GL_FALSE);
-  glEnable(GL_STENCIL_TEST);
+  glDepthMask(GL_FALSE);	//Turn off depth-test
 
   glUseProgram(shadows); 
   glUniform4fv(glGetUniformLocation(shadows, "lightSourceDir"), 1, &lightSourceDirection.x);
  
-  glCullFace(GL_FRONT);
+  glCullFace(GL_BACK);
   glStencilFunc(GL_ALWAYS,0,0xFFFFFFFF);
-  glStencilOp(GL_KEEP,GL_KEEP,GL_INCR);
+  glStencilOp(GL_KEEP,GL_KEEP,GL_INCR);	// Increment stencil buffer on depth-pass
 
   w.draw(shadows);
 
-  glCullFace(GL_BACK);
-  glStencilOp(GL_KEEP,GL_KEEP,GL_DECR);
+  glCullFace(GL_FRONT);
+  glStencilFunc(GL_ALWAYS,0,0xFFFFFFFF);
+  glStencilOp(GL_KEEP,GL_KEEP,GL_DECR); // Decrement stencil buffer on depth-pass
   w.draw(shadows);   
- 
+
   // Reset depth and color 
   glColorMask(GL_TRUE,GL_TRUE,GL_TRUE,GL_TRUE);
   glDepthMask(GL_TRUE);
-  //glStencilMask(0x00); //???
   
   //draw scene
   glCullFace(GL_BACK);
   glUseProgram(program);
   glUniform4fv(glGetUniformLocation(program, "lightSourceDir"), 1, &lightSourceDirection.x);
 
-  glStencilFunc(GL_EQUAL,0,0xFFFFFFFF);
-  glStencilOp(GL_KEEP,GL_KEEP,GL_KEEP);
+  glStencilFunc(GL_EQUAL,0,0xFFFFFFFF);	//Draw lighted areas
+  glStencilOp(GL_KEEP,GL_KEEP,GL_KEEP);	//Don't change the stencil buffer
   w.draw(program);
 
-  glDisable(GL_STENCIL_TEST);
+  glDisable(GL_STENCIL_TEST);	//Disable stencil buffer
   glutSwapBuffers();
 }
 
@@ -165,13 +167,13 @@ void mouse_passive_move(int x, int y)
   int win_height = window_height;
 
   float dx = ((float)old_mouse_x - x)/win_width;
-  float dy = ((float) old_mouse_y - y)/win_height;
+  float dy = ((float) y - old_mouse_y)/win_height;
 
   old_mouse_x = x;
   old_mouse_y = y;
 
-  w.cam.h_rotate(dx*M_PI*2);
-  w.cam.v_rotate(dy*M_PI*2);
+  w.cam.h_rotate(dx*M_PI*2*0.1);
+  w.cam.v_rotate(dy*M_PI*2*0.1);
   if(leftMB){
     w.o.place(w.cam.position + w.cam.forward);
   }

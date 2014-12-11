@@ -71,5 +71,5 @@ void Body::rotate(char direction, float angle)
 
 void Body::update()
 {
-  matrix = trans_mat * rot_mat * scale_mat;
+  matrix = trans_mat * rot_mat *  scale_mat;
 }

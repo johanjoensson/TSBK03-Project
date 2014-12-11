@@ -1,5 +1,4 @@
 #version 150 
-//#extension GL_ARB_geometry_shader4 : enable
 layout(triangles_adjacency) in;
 layout(triangle_strip, max_vertices=18) out;
 
@@ -12,7 +11,7 @@ uniform mat4 viewMatrix;
 void main()
 {
 
-vec4 light = viewMatrix*modelMatrix*lightSourceDir;
+vec4 light = viewMatrix*lightSourceDir;
   vec3 ns[3];
   vec3 d[3];
   vec3 or_pos[3]; // Triangle oriented toward light source  
