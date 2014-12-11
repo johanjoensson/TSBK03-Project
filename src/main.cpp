@@ -87,8 +87,6 @@ void init(void)
  
   w = World();
 
-
-
   // Ladda upp ljusfarg
   glUniform3fv(glGetUniformLocation(program, "lightSourceColor"),1, &lightSourceColor.x);
 
