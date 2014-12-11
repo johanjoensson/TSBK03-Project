@@ -1,5 +1,7 @@
 #include "world.h"
 #include <stdio.h>
+#include "math.h"
+
 
 World::World()
 {
@@ -20,7 +22,6 @@ World::World()
 void World::draw(int program)
 {
    cam.draw(program);
-
    ground.draw(program);
     
    o.draw(program);
@@ -30,6 +31,5 @@ void World::draw(int program)
 void World::update()
 {
 
-//  o.translate( 1,  1, 1);
 
 }
