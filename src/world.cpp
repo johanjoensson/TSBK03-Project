@@ -12,8 +12,8 @@ World::World()
 
 
   cam = Camera();
-  ground = Body("src/obj/untitled.obj", "src/obj/grass.tga");
-  ground.place(vec3(0,0.0,0));
+  ground = Body("src/obj/ground.obj", "src/obj/grass.tga");
+  ground.place(vec3(0,-1.0,0));
   ground.set_scale(10);
 }
 
