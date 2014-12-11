@@ -86,7 +86,7 @@ void init(void)
   // Load and compile shader
   shadows = loadShadersG("src/shadows.vert", "src/shadows.frag", "src/shadows.geom");
   program =  loadShaders("src/simple.vert", "src/simple.frag");//, "src/pass_through.geom");
-  bla =  loadShaders("src/simple.vert", "src/simple2.frag");//, "src/pass_through.geom");
+//  bla =  loadShaders("src/simple.vert", "src/simple2.frag");//, "src/pass_through.geom");
   printError("init shader");
  
   w = World();
@@ -110,38 +110,37 @@ void display(void)
   // Initialize depth buffer and stencil buffer
   glColorMask(GL_TRUE,GL_FALSE,GL_FALSE,GL_FALSE);
   glEnable(GL_STENCIL_TEST);
-  glStencilFunc(GL_NEVER,3,0xFFFFFFFF);	//Write 0's in stencil buffer
+  glStencilFunc(GL_NEVER,0,0xFFFFFFFF);	//Write 0's in stencil buffer
   glStencilOp(GL_REPLACE,GL_KEEP,GL_KEEP);	// See above
-  w.o.draw(program);
+  w.draw(program);
 
   // Set up the stencil buffer
-//  glDepthMask(GL_FALSE);	//Turn off depth-test
+  glDepthMask(GL_FALSE);	//Turn off depth-test
   
-//  glUseProgram(shadows); 
-//  glUniform4fv(glGetUniformLocation(shadows, "lightSourceDir"), 1, &lightSourceDirection.x);
- 
- /* 
+  glUseProgram(shadows);	// Switch to shadow volume generation 
+  glUniform4fv(glGetUniformLocation(shadows, "lightSourceDir"), 1, &lightSourceDirection.x);
+  
   glCullFace(GL_BACK);
   glStencilFunc(GL_ALWAYS,0,0xFFFFFFFF);
   glStencilOp(GL_KEEP,GL_KEEP,GL_INCR);	// Increment stencil buffer on depth-pass
 
-  w.o.draw(program);
+  w.draw(shadows);
 
   glCullFace(GL_FRONT);
   glStencilFunc(GL_ALWAYS,0,0xFFFFFFFF);
   glStencilOp(GL_KEEP,GL_KEEP,GL_DECR); // Decrement stencil buffer on depth-pass
-  w.o.draw(program);   
-*/
+  w.draw(shadows);   
+
   // Reset depth and color 
   glColorMask(GL_TRUE,GL_TRUE,GL_TRUE,GL_TRUE);
-//  glDepthMask(GL_TRUE);
+  glDepthMask(GL_TRUE);
   
   //draw scene
-//  glCullFace(GL_BACK);
+  glCullFace(GL_BACK);
   glUseProgram(program);
   glUniform4fv(glGetUniformLocation(program, "lightSourceDir"), 1, &lightSourceDirection.x);
 
-  glStencilFunc(GL_NEVER,0,0xFFFFFFFF);	//Draw lighted areas
+  glStencilFunc(GL_EQUAL,0,0xFFFFFFFF);	//Draw lighted areas
   glStencilOp(GL_KEEP,GL_KEEP,GL_KEEP);	//Don't change the stencil buffer
   w.draw(program);
   
@@ -198,8 +197,5 @@ int main(int argc, char *argv[])
   glutMouseFunc(&MouseClickFunc);
   init ();
 
-  GLint num = 5;
-  glGetIntegerv(GL_STENCIL_BITS, &num);
-  std::cout << "Size of stencil buffer: " << num << std::endl;
   glutMainLoop();
 }
