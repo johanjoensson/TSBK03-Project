@@ -18,7 +18,8 @@ void main()
   vec4 v[4]; //Temporary vertices
   or_pos[0]= gl_in[0].gl_Position;  
   or_pos[1]= gl_in[2].gl_Position;  
-  or_pos[2]= gl_in[4].gl_Position;  
+  or_pos[2]= gl_in[4].gl_Position; 
+ 
   // Compute normal at each vertex.
   ns[0] = cross(
 		 vec3(gl_in[2].gl_Position - gl_in[0].gl_Position),

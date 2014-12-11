@@ -16,8 +16,8 @@ int old_mouse_x = 150;
 int old_mouse_y = 150;
 //Model *m;
 World w;
-vec4 lightSourceDirection = vec4{0,14,0,0.0};
-vec3 lightSourceColor = vec3{1,0,1};
+vec4 lightSourceDirection = vec4{4,4,0,0.0};
+vec3 lightSourceColor = vec3{1,1,1};
 GLfloat t;
 GLuint program, shadows;
 bool leftMB;
@@ -82,7 +82,7 @@ void init(void)
   printError("GL inits");
   // Load and compile shader
   shadows = loadShadersG("src/shadows.vert", "src/shadows.frag", "src/shadows.geom");
-  program =  loadShadersG("src/simple.vert", "src/simple.frag", "src/pass_through.geom");
+  program =  loadShaders("src/simple.vert", "src/simple.frag");//, "src/pass_through.geom");
   printError("init shader");
  
   w = World();
@@ -103,8 +103,8 @@ void display(void)
   glUseProgram(program);
   glUniform4fv(glGetUniformLocation(program, "lightSourceDir"), 1, &lightSourceDirection.x);
 
-  // Initialise depth buffer and stencil buffer
-  glColorMask(GL_FALSE,GL_FALSE,GL_FALSE,GL_FALSE);
+  // Initialize depth buffer and stencil buffer
+  glColorMask(GL_TRUE,GL_FALSE,GL_FALSE,GL_FALSE);
   glEnable(GL_STENCIL_TEST);
   glStencilFunc(GL_NEVER,0,0xFFFFFFFF);	//Write 0's in stencil buffer
   glStencilOp(GL_REPLACE,GL_KEEP,GL_KEEP);	// See above
