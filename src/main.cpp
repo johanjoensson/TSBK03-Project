@@ -9,6 +9,8 @@
 #include "body.h"
 #include "math.h"      
 
+#include <iostream>
+
 int window_width = 400;
 int window_height = 400;
 
@@ -20,7 +22,7 @@ World w;
 vec4 lightSourceDirection = vec4{0,3,0,1.0};
 vec3 lightSourceColor = vec3{1,1,1};
 GLfloat t;
-GLuint program, shadows;
+GLuint program, shadows, bla;
 bool leftMB;
 
 void keyboard(unsigned char key, int x, int y)
@@ -84,6 +86,7 @@ void init(void)
   // Load and compile shader
   shadows = loadShadersG("src/shadows.vert", "src/shadows.frag", "src/shadows.geom");
   program =  loadShaders("src/simple.vert", "src/simple.frag");//, "src/pass_through.geom");
+  bla =  loadShaders("src/simple.vert", "src/simple2.frag");//, "src/pass_through.geom");
   printError("init shader");
  
   w = World();
@@ -107,43 +110,45 @@ void display(void)
   // Initialize depth buffer and stencil buffer
   glColorMask(GL_TRUE,GL_FALSE,GL_FALSE,GL_FALSE);
   glEnable(GL_STENCIL_TEST);
-  glStencilFunc(GL_NEVER,0,0xFFFFFFFF);	//Write 0's in stencil buffer
+  glStencilFunc(GL_NEVER,3,0xFFFFFFFF);	//Write 0's in stencil buffer
   glStencilOp(GL_REPLACE,GL_KEEP,GL_KEEP);	// See above
-  w.draw(program);
+  w.o.draw(program);
 
   // Set up the stencil buffer
-  glDepthMask(GL_FALSE);	//Turn off depth-test
+//  glDepthMask(GL_FALSE);	//Turn off depth-test
   
-  glUseProgram(shadows); 
-  glUniform4fv(glGetUniformLocation(shadows, "lightSourceDir"), 1, &lightSourceDirection.x);
+//  glUseProgram(shadows); 
+//  glUniform4fv(glGetUniformLocation(shadows, "lightSourceDir"), 1, &lightSourceDirection.x);
  
-  
+ /* 
   glCullFace(GL_BACK);
   glStencilFunc(GL_ALWAYS,0,0xFFFFFFFF);
   glStencilOp(GL_KEEP,GL_KEEP,GL_INCR);	// Increment stencil buffer on depth-pass
 
-  w.draw(shadows);
+  w.o.draw(program);
 
   glCullFace(GL_FRONT);
   glStencilFunc(GL_ALWAYS,0,0xFFFFFFFF);
   glStencilOp(GL_KEEP,GL_KEEP,GL_DECR); // Decrement stencil buffer on depth-pass
-  w.draw(shadows);   
-  
+  w.o.draw(program);   
+*/
   // Reset depth and color 
   glColorMask(GL_TRUE,GL_TRUE,GL_TRUE,GL_TRUE);
-  glDepthMask(GL_TRUE);
+//  glDepthMask(GL_TRUE);
   
   //draw scene
-  glCullFace(GL_BACK);
+//  glCullFace(GL_BACK);
   glUseProgram(program);
   glUniform4fv(glGetUniformLocation(program, "lightSourceDir"), 1, &lightSourceDirection.x);
 
-  glStencilFunc(GL_EQUAL,0,0xFFFFFFFF);	//Draw lighted areas
+  glStencilFunc(GL_NEVER,0,0xFFFFFFFF);	//Draw lighted areas
   glStencilOp(GL_KEEP,GL_KEEP,GL_KEEP);	//Don't change the stencil buffer
   w.draw(program);
-
+  
   glDisable(GL_STENCIL_TEST);	//Disable stencil buffer
+
   glutSwapBuffers();
+
 }
 
 void idle()
@@ -184,7 +189,7 @@ int main(int argc, char *argv[])
   glutInit(&argc, argv);
   glutInitDisplayMode(GLUT_RGBA|GLUT_DEPTH|GLUT_DOUBLE|GLUT_STENCIL);
   glutInitContextVersion(3, 2);
-  glutCreateWindow ("Simple program, start of camera stuff");
+  glutCreateWindow ("It's shiet being Scottish!");
   glutDisplayFunc(display); 
   glutReshapeFunc(&window_reshape);
   glutIdleFunc(idle);
@@ -192,5 +197,9 @@ int main(int argc, char *argv[])
   glutPassiveMotionFunc(mouse_passive_move);
   glutMouseFunc(&MouseClickFunc);
   init ();
+
+  GLint num = 5;
+  glGetIntegerv(GL_STENCIL_BITS, &num);
+  std::cout << "Size of stencil buffer: " << num << std::endl;
   glutMainLoop();
 }

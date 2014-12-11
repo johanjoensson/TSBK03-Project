@@ -17,6 +17,7 @@ class World {
   Body p;
   Body ground;
 
+  Body test_shade;
   void update();
   void draw(int);
   // void choseObject();

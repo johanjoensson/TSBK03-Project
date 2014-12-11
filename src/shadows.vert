@@ -14,6 +14,6 @@ void main(void)
 	gl_Position = viewMatrix*modelMatrix*vec4(in_Position,1.0);
 	//For use in Geom-shader
 
-	vec3 normals = in_Normal;
-	vec2 texcoords = in_TexCoord;
+	vec3 normals = 0.5*in_Normal;
+	vec2 texcoords = 0.5*in_TexCoord;
 }
