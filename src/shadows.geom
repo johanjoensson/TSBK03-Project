@@ -11,14 +11,14 @@ uniform mat4 viewMatrix;
 void main()
 {
 
-vec4 light = viewMatrix*lightSourceDir;
+  vec4 light = viewMatrix*lightSourceDir;
   vec3 ns[3];
   vec3 d[3];
-  vec3 or_pos[3]; // Triangle oriented toward light source  
+  vec4 or_pos[3]; // Triangle oriented toward light source  
   vec4 v[4]; //Temporary vertices
-  or_pos[0]= vec3(gl_in[0].gl_Position);  
-  or_pos[1]= vec3(gl_in[2].gl_Position);  
-  or_pos[2]= vec3(gl_in[4].gl_Position);  
+  or_pos[0]= gl_in[0].gl_Position;  
+  or_pos[1]= gl_in[2].gl_Position;  
+  or_pos[2]= gl_in[4].gl_Position;  
   // Compute normal at each vertex.
   ns[0] = cross(
 		 vec3(gl_in[2].gl_Position - gl_in[0].gl_Position),
@@ -38,8 +38,8 @@ vec4 light = viewMatrix*lightSourceDir;
   if ( !(dot(ns[0],d[0])>0 || dot(ns[1],d[1])>0 ||  
 	 dot(ns[2],d[2])>0) ) {   
     // Flip vertex winding order in or_pos.  
-    or_pos[1] = vec3(gl_in[4].gl_Position);  
-    or_pos[2] = vec3(gl_in[2].gl_Position);  
+    or_pos[1] = gl_in[4].gl_Position;  
+    or_pos[2] = gl_in[2].gl_Position;  
     faces_light = false;  
   }  
   for ( int i=0; i<3; i++ ) {

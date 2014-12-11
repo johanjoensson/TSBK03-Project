@@ -14,9 +14,9 @@ Camera::Camera()
     //projectionMatrix = perspective(90, 1.0, 0.1, 1000);
     projectionMatrix = frustum(left, right, bottom, top, near, far);
 
-    forward = vec3(0,-1,0);
-    up = vec3(0,0,-1);
-    position = vec3(0,4,0);
+    forward = Normalize(vec3(0,-1,-1));
+    up = Normalize(vec3(0,1,-1));
+    position = vec3(0,2,2);
 
 
     view_matrix = lookAtv(position,VectorAdd(position,forward),up); 
