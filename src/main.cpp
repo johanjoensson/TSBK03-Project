@@ -16,8 +16,8 @@ int old_mouse_x = 150;
 int old_mouse_y = 150;
 //Model *m;
 World w;
-vec4 lightSourceDirection = vec4{0,4,0,1.0};
-vec3 lightSourceColor = vec3{1,1,1};
+vec4 lightSourceDirection = vec4{0,14,0,0.0};
+vec3 lightSourceColor = vec3{1,0,1};
 GLfloat t;
 GLuint program, shadows;
 bool leftMB;
@@ -86,8 +86,6 @@ void init(void)
   printError("init shader");
  
   w = World();
-
-
 
   // Ladda upp ljusfarg
   glUniform3fv(glGetUniformLocation(program, "lightSourceColor"),1, &lightSourceColor.x);

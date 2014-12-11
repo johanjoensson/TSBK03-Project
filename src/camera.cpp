@@ -3,7 +3,7 @@
 
 Camera::Camera()
 {
-    far = 30;
+    far = 100;
     near = 1;
     right = 0.5;
     left = -0.5;
@@ -11,12 +11,12 @@ Camera::Camera()
     bottom = -0.5;
 
 
-    //projectionMatrix = perspective(90, 1.0, 0.1, 1000);
-    projectionMatrix = frustum(left, right, bottom, top, near, far);
+    projectionMatrix = perspective(90, 1.0, 0.1, 1000);
+//    projectionMatrix = frustum(left, right, bottom, top, near, far);
 
-    forward = Normalize(vec3(0,-1,-1));
-    up = Normalize(vec3(0,1,-1));
-    position = vec3(0,2,2);
+    forward = vec3(0,-1,-1);
+    up = vec3(0,1,0);
+    position = vec3(0,1,1);
 
 
     view_matrix = lookAtv(position,VectorAdd(position,forward),up); 
