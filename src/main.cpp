@@ -16,7 +16,7 @@ int old_mouse_x = 150;
 int old_mouse_y = 150;
 //Model *m;
 World w;
-vec4 lightSourceDirection = vec4{0,4,0,1.0};
+vec4 lightSourceDirection = vec4{0,3,0,1.0};
 vec3 lightSourceColor = vec3{1,1,1};
 GLfloat t;
 GLuint program, shadows;
@@ -114,10 +114,11 @@ void display(void)
 
   // Set up the stencil buffer
   glDepthMask(GL_FALSE);	//Turn off depth-test
-
+  
   glUseProgram(shadows); 
   glUniform4fv(glGetUniformLocation(shadows, "lightSourceDir"), 1, &lightSourceDirection.x);
  
+  
   glCullFace(GL_BACK);
   glStencilFunc(GL_ALWAYS,0,0xFFFFFFFF);
   glStencilOp(GL_KEEP,GL_KEEP,GL_INCR);	// Increment stencil buffer on depth-pass
@@ -128,7 +129,7 @@ void display(void)
   glStencilFunc(GL_ALWAYS,0,0xFFFFFFFF);
   glStencilOp(GL_KEEP,GL_KEEP,GL_DECR); // Decrement stencil buffer on depth-pass
   w.draw(shadows);   
-
+  
   // Reset depth and color 
   glColorMask(GL_TRUE,GL_TRUE,GL_TRUE,GL_TRUE);
   glDepthMask(GL_TRUE);
@@ -168,7 +169,7 @@ void mouse_passive_move(int x, int y)
 
   float dx = ((float)old_mouse_x - x)/win_width;
   float dy = ((float) y - old_mouse_y)/win_height;
-
+  
   old_mouse_x = x;
   old_mouse_y = y;
 
