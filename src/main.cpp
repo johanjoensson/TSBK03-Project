@@ -21,7 +21,7 @@ int old_mouse_y = 150;
 //Model *m;
 World w;
 
-vec4 lightSourceDirection = vec4{0,3,6,1.0};
+vec4 lightSourceDirection = vec4{0,3,0,1.0};
 vec3 lightSourceColor = vec3{1,1,1};
 GLfloat t;
 GLuint program, shadows, bla;
@@ -112,7 +112,7 @@ void display(void)
   glUniform4fv(glGetUniformLocation(program, "lightSourceDir"), 1, &lightSourceDirection.x);
 
   // Initialize depth buffer and stencil buffer
-  glColorMask(GL_TRUE,GL_FALSE,GL_FALSE,GL_FALSE);
+  glColorMask(GL_TRUE,GL_TRUE,GL_FALSE,GL_FALSE);
   glEnable(GL_STENCIL_TEST);
   glStencilFunc(GL_NEVER,0,0xFFFFFFFF);	//Write 0's in stencil buffer
   glStencilOp(GL_REPLACE,GL_KEEP,GL_KEEP);	// See above
