@@ -25,6 +25,7 @@ Camera::Camera()
 void Camera::update()
 {
     position = trans_mat*position;
+
 //    if(position.y < 0)
 //    	position.y = 0;
     forward = rot_mat*forward;
