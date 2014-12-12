@@ -10,7 +10,7 @@ World::World()
   o.rotate('y', 3.14/2);
   o.set_scale(0.5);
   p.translate(0.0,1.0,0.0);
-  o.place(vec3(0.5,0.0,0.0));
+  o.place(vec3(0.5,-0.5,0.0));
 
 
   cam = Camera();

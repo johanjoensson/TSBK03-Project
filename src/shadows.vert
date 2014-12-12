@@ -7,13 +7,13 @@ in vec2 in_TexCoord;
 
 uniform mat4 viewMatrix;
 uniform mat4 modelMatrix;
-
+uniform mat4 projectionMatrix;
 void main(void)
 {  
 	
 	gl_Position = viewMatrix*modelMatrix*vec4(in_Position,1.0);
 	//For use in Geom-shader
 
-	vec3 normals = in_Normal;
-	vec2 texcoords = in_TexCoord;
+//	vec3 normals = in_Normal;
+//	vec2 texcoords = in_TexCoord;
 }
