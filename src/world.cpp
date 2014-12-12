@@ -10,6 +10,7 @@ World::World()
   o.rotate('y', 3.14/2);
   o.set_scale(2);
   p.translate(0.0,1.0,0.0);
+
   o.place(vec3(0.5,-1.0,0.0));
 
 
