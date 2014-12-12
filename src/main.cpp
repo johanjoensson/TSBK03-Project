@@ -112,18 +112,19 @@ void display(void)
   glUniform4fv(glGetUniformLocation(program, "lightSourceDir"), 1, &lightSourceDirection.x);
 
   // Initialize depth buffer and stencil buffer
-  glColorMask(GL_FALSE,GL_FALSE,GL_FALSE,GL_FALSE);
+  glColorMask(GL_TRUE,GL_FALSE,GL_FALSE,GL_FALSE);
   glEnable(GL_STENCIL_TEST);
   glStencilFunc(GL_NEVER,0,0xFFFFFFFF);	//Write 0's in stencil buffer
   glStencilOp(GL_REPLACE,GL_KEEP,GL_KEEP);	// See above
   w.draw(program);
 
   // Set up the stencil buffer
-  glDepthMask(GL_FALSE);	//Turn off depth-test
+
+  //glDepthMask(GL_FALSE);	//Turn off depth-test
   
   glUseProgram(shadows);	// Switch to shadow volume generation 
   glUniform4fv(glGetUniformLocation(shadows, "lightSourceDir"), 1, &lightSourceDirection.x);
-  
+
   glCullFace(GL_BACK);
   glStencilFunc(GL_ALWAYS,0,0xFFFFFFFF);
   glStencilOp(GL_KEEP,GL_KEEP,GL_INCR_WRAP);	// Increment stencil buffer on depth-pass
@@ -133,7 +134,9 @@ void display(void)
   
   glCullFace(GL_FRONT);
   glStencilFunc(GL_ALWAYS,0,0xFFFFFFFF);
+
   glStencilOp(GL_KEEP,GL_KEEP,GL_DECR_WRAP); // Decrement stencil buffer on depth-pass
+
   w.draw(shadows);   
 
   // w.o.draw(program);
@@ -146,6 +149,7 @@ void display(void)
   glCullFace(GL_BACK);
   glUseProgram(program);
   glUniform4fv(glGetUniformLocation(program, "lightSourceDir"), 1, &lightSourceDirection.x);
+
 
   glStencilFunc(GL_EQUAL,0,0xFFFFFFFF);	//Draw lighted areas
   glStencilOp(GL_KEEP,GL_KEEP,GL_KEEP);	//Don't change the stencil buffer

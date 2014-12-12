@@ -10,7 +10,7 @@ uniform mat4 viewMatrix;
 void main()
 {
 
-  vec4 light = /*viewMatrix*/lightSourceDir;
+  vec4 light = viewMatrix*lightSourceDir;
   vec3 ns[3];
   vec3 d[3]; //direction toward light
   vec3 or_pos[3]; // Triangle oriented toward light source
