@@ -5,7 +5,7 @@
 
 World::World()
 {
-  o = Body("src/obj/cubeplus.obj", "src/obj/grass.tga");
+  o = Body("src/obj/bunnyplus.obj", "src/obj/grass.tga");
   p = Body("src/obj/bunnyplus.obj", "src/obj/SkyBox512.tga");
   o.rotate('y', 3.14/2);
   o.set_scale(2);
@@ -24,7 +24,7 @@ void World::draw(int program)
    cam.draw(program);
    ground.draw(program);
     
-//   o.draw(program);
+   o.draw(program);
    p.draw(program);
 } 
 
