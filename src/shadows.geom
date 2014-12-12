@@ -36,8 +36,8 @@ void main()
   d[2] = light.xyz-light.w*vec3(gl_in[4].gl_Position);
   bool faces_light = true;
 
-  if ( !(dot(ns[0],d[0])>0 || dot(ns[1],d[1])>0 ||
-	 dot(ns[2],d[2])>0) ) {
+  if ( !(dot(ns[0],d[0])>0 || dot(ns[1],d[1])>0 || dot(ns[2],d[2])>0)) 
+  {
     // Flip vertex winding order in or_pos.
     or_pos[1] = vec3(gl_in[4].gl_Position);
     or_pos[2] = vec3(gl_in[2].gl_Position);
@@ -45,7 +45,9 @@ void main()
   }
 
   for ( int i=0; i<3; i++ ) {
-    // Compute indices of neighbor triangle.
+    // Compute indices of neighbor triangle. First 0,2,1 then 2,4,3
+   // then 4,5,0
+
     int v0 = i*2;
     int nb = (i*2+1);
     int v1 = (i*2+2) % 6;
@@ -77,6 +79,7 @@ void main()
 	// Make sure sides are oriented correctly.
 	int i0 = faces_light ? v0 : v1;
 	int i1 = faces_light ? v1 : v0;
+
 	v[0] = gl_in[i0].gl_Position;
 	v[1] = vec4(light.w*vec3(gl_in[i0].gl_Position) - light.xyz, 0);
 	v[2] = gl_in[i1].gl_Position;
