@@ -86,7 +86,7 @@ void init(void)
   // Load and compile shader
   shadows = loadShadersG("src/shadows.vert", "src/shadows.frag", "src/shadows.geom");
   program =  loadShaders("src/simple.vert", "src/simple.frag");//, "src/pass_through.geom");
-  bla =  loadShaders("src/simple.vert", "src/simple2.frag");//, "src/pass_through.geom");
+//  bla =  loadShaders("src/simple.vert", "src/simple2.frag");//, "src/pass_through.geom");
   printError("init shader");
  
   w = World();
@@ -108,7 +108,7 @@ void display(void)
   glUniform4fv(glGetUniformLocation(program, "lightSourceDir"), 1, &lightSourceDirection.x);
 
   // Initialize depth buffer and stencil buffer
-  glColorMask(GL_TRUE,GL_FALSE,GL_FALSE,GL_FALSE);
+  glColorMask(GL_FALSE,GL_FALSE,GL_FALSE,GL_FALSE);
   glEnable(GL_STENCIL_TEST);
   glStencilFunc(GL_NEVER,0,0xFFFFFFFF);	//Write 0's in stencil buffer
   glStencilOp(GL_REPLACE,GL_KEEP,GL_KEEP);	// See above
@@ -117,19 +117,19 @@ void display(void)
   // Set up the stencil buffer
   glDepthMask(GL_FALSE);	//Turn off depth-test
   
-//  glUseProgram(shadows);	// Switch to shadow volume generation 
-//  glUniform4fv(glGetUniformLocation(shadows, "lightSourceDir"), 1, &lightSourceDirection.x);
+  glUseProgram(shadows);	// Switch to shadow volume generation 
+  glUniform4fv(glGetUniformLocation(shadows, "lightSourceDir"), 1, &lightSourceDirection.x);
   
   glCullFace(GL_BACK);
   glStencilFunc(GL_ALWAYS,0,0xFFFFFFFF);
   glStencilOp(GL_KEEP,GL_KEEP,GL_INCR);	// Increment stencil buffer on depth-pass
 
-  w.o.draw(program);
+  w.draw(program);
 
   glCullFace(GL_FRONT);
   glStencilFunc(GL_ALWAYS,0,0xFFFFFFFF);
   glStencilOp(GL_KEEP,GL_KEEP,GL_DECR); // Decrement stencil buffer on depth-pass
-  w.o.draw(program);   
+  w.draw(program);   
 
   // Reset depth and color 
   glColorMask(GL_TRUE,GL_TRUE,GL_TRUE,GL_TRUE);
