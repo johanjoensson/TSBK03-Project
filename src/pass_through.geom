@@ -7,9 +7,6 @@ in vec2 ex_TexCoord[];
 out vec3 f_Normal;
 out vec2 f_TexCoord;	     
 out vec3 f_Position;
-uniform vec4 lightSourceDir;
-uniform mat4 projectionMatrix;
-
 
 void main()
 {

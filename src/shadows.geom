@@ -1,13 +1,16 @@
 #version 150
 layout(triangles_adjacency) in;
 layout(triangle_strip, max_vertices=18) out;
+
 uniform vec4 lightSourceDir;
+
 uniform mat4 projectionMatrix;
-uniform mat4 modelMatrix;
 uniform mat4 viewMatrix;
+
 void main()
 {
-  vec4 light = viewMatrix*lightSourceDir;
+
+  vec4 light = /*viewMatrix*/lightSourceDir;
   vec3 ns[3];
   vec3 d[3]; //direction toward light
   vec3 or_pos[3]; // Triangle oriented toward light source
@@ -90,5 +93,4 @@ void main()
 	EmitVertex(); EndPrimitive();
       }
   }
-
 }

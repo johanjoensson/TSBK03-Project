@@ -26,6 +26,7 @@ void main(void)
 	out_Color = texture(objTex, ex_TexCoord);
      	vec4 diffuse;
 	vec4 specular;
+
      	// Vector from surface to light source 
      	vec3 direction = ex_Position - vec3(light); 
 
