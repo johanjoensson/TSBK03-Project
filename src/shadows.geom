@@ -9,8 +9,7 @@ uniform mat4 viewMatrix;
 
 void main()
 {
-
-  vec4 light = viewMatrix*lightSourceDir;
+  vec4 light = /*viewMatrix*/lightSourceDir; // FIXME 2
   vec3 ns[3];
   vec3 d[3]; //direction toward light
   vec3 or_pos[3]; // Triangle oriented toward light source
@@ -30,6 +29,7 @@ void main()
   ns[2] = cross(
 		vec3(gl_in[0].gl_Position - gl_in[4].gl_Position),
 		vec3(gl_in[2].gl_Position - gl_in[4].gl_Position) );
+		
 
   d[0] = light.xyz-light.w*vec3(gl_in[0].gl_Position);
   d[1] = light.xyz-light.w*vec3(gl_in[2].gl_Position);
