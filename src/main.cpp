@@ -10,14 +10,14 @@
 #include "math.h"    
 
 #include <iostream>  
-
+/*
 #define FAR 100
 #define NEAR 1
 #define RIGHT 0.5
 #define LEFT -0.5
 #define TOP  0.5
 #define BOTTOM -0.5
-
+*/
 
 int window_width = 400;
 int window_height = 400;
@@ -28,12 +28,14 @@ int old_mouse_y = 150;
 World w;
 
 
-vec4 lightSourceDirection = vec4{0,1,1,1.0};
+vec4 lightSourceDirection = vec4{3.0,3.0,0.0,1.0};
 vec3 lightSourceColor = vec3{1,1,1};
 GLfloat t;
 GLuint program, shadows;
 bool c, leftMB, disp_volumes;
 mat4 projectionMatrix;
+
+
 void keyboard(unsigned char key, int x, int y)
 {
   vec3 left = CrossProduct(w.cam.up, w.cam.forward);
@@ -119,24 +121,24 @@ printError("init shader");
   // Ladda upp ljusfarg
   glUniform3fv(glGetUniformLocation(program, "lightSourceColor"),1, &lightSourceColor.x);
   glUniform4fv(glGetUniformLocation(shadows, "lightSourceDir"), 1, &lightSourceDirection.x);
-  glUniform4fv(glGetUniformLocation(program, "lightSourceDir"), 1, &lightSourceDirection.x);
+   glUniform4fv(glGetUniformLocation(program, "lightSourceDir"), 1, &lightSourceDirection.x);
 
 }
 
 void display(void)
 {
   printError("pre display");
-  // glDepthMask(GL_TRUE);
+  glDepthMask(GL_TRUE);
   // clear the screen
-  // lightSourceDirection = vec4(w.cam.position.x,w.cam.position.y,w.cam.position.z,1.0); 
+  //lightSourceDirection = vec4(w.cam.position.x,w.cam.position.y,w.cam.position.z,1.0); 
   glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT|GL_STENCIL_BUFFER_BIT);  
   
   glUseProgram(program);
-  //glUniform4fv(glGetUniformLocation(program, "lightSourceDir"), 1, &lightSourceDirection.x);
+  glUniform4fv(glGetUniformLocation(program, "lightSourceDir"), 1, &lightSourceDirection.x);
 
   
   // Initialize depth buffer and stencil buffer
-  glColorMask(GL_FALSE,GL_FALSE,GL_FALSE,GL_FALSE);
+  glColorMask(GL_TRUE,GL_TRUE,GL_FALSE,GL_FALSE);
   glEnable(GL_STENCIL_TEST);
   glStencilFunc(GL_NEVER,0,0xFFFFFFFF);	//Write 0's in stencil buffer
   glStencilOp(GL_REPLACE,GL_KEEP,GL_KEEP);	// See above
