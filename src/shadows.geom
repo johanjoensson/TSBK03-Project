@@ -9,9 +9,8 @@ uniform mat4 viewMatrix;
 
 void main()
 {
-
-  vec4 light = viewMatrix*lightSourceDir;
-  vec3 ns[3];
+  vec4 light = viewMatrix*lightSourceDir; // FIXME! err, not sure about the viewMatrix
+  vec3 n[3]; // Normals.. (could be fetched from teh ones we have?)
   vec3 d[3]; //direction toward light
   vec3 or_pos[3]; // Triangle oriented toward light source
   vec4 v[4]; //Temporary vertices
@@ -21,22 +20,23 @@ void main()
   or_pos[2]= vec3(gl_in[4].gl_Position);
 
   // Compute normal at each vertex.
-  ns[0] = cross(
+  n[0] = cross(
 		vec3(gl_in[2].gl_Position - gl_in[0].gl_Position),
 		vec3(gl_in[4].gl_Position - gl_in[0].gl_Position));
-  ns[1] = cross(
+  n[1] = cross(
 		vec3(gl_in[4].gl_Position - gl_in[2].gl_Position),
 		vec3(gl_in[0].gl_Position - gl_in[2].gl_Position) );
-  ns[2] = cross(
+  n[2] = cross(
 		vec3(gl_in[0].gl_Position - gl_in[4].gl_Position),
 		vec3(gl_in[2].gl_Position - gl_in[4].gl_Position) );
+		
 
   d[0] = light.xyz-light.w*vec3(gl_in[0].gl_Position);
   d[1] = light.xyz-light.w*vec3(gl_in[2].gl_Position);
   d[2] = light.xyz-light.w*vec3(gl_in[4].gl_Position);
   bool faces_light = true;
 
-  if ( !(dot(ns[0],d[0])>0 || dot(ns[1],d[1])>0 || dot(ns[2],d[2])>0)) 
+  if ( !(dot(n[0],d[0])>0 || dot(n[1],d[1])>0 || dot(n[2],d[2])>0)) 
   {
     // Flip vertex winding order in or_pos.
     or_pos[1] = vec3(gl_in[4].gl_Position);
@@ -54,13 +54,13 @@ void main()
 
     // Compute normals at vertices, the *exact*
     // same way as done above!
-    ns[0] = cross(
+    n[0] = cross(
 		  vec3(gl_in[nb].gl_Position-gl_in[v0].gl_Position),
 		  vec3(gl_in[v1].gl_Position-gl_in[v0].gl_Position));
-    ns[1] = cross(
+    n[1] = cross(
 		  vec3(gl_in[v1].gl_Position-gl_in[nb].gl_Position),
 		  vec3(gl_in[v0].gl_Position-gl_in[nb].gl_Position));
-    ns[2] = cross(
+    n[2] = cross(
 		  vec3(gl_in[v0].gl_Position-gl_in[v1].gl_Position),
 		  vec3(gl_in[nb].gl_Position-gl_in[v1].gl_Position));
 
@@ -72,9 +72,9 @@ void main()
     // Extrude the edge if it does not have a
     // neighbor, or if it's a possible silhouette.
     if ( gl_in[nb].gl_Position.w < 1e-3 ||
-	 ( faces_light != (dot(ns[0],d[0])>0 ||
-			   dot(ns[1],d[1])>0 ||
-			   dot(ns[2],d[2])>0) ))
+	 ( faces_light != (dot(n[0],d[0])>0 ||
+			   dot(n[1],d[1])>0 ||
+			   dot(n[2],d[2])>0) ))
       {
 	// Make sure sides are oriented correctly.
 	int i0 = faces_light ? v0 : v1;

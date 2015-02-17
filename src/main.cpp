@@ -10,8 +10,14 @@
 #include "math.h"    
 
 #include <iostream>  
-
-#include <iostream>
+/*
+#define FAR 100
+#define NEAR 1
+#define RIGHT 0.5
+#define LEFT -0.5
+#define TOP  0.5
+#define BOTTOM -0.5
+*/
 
 int window_width = 400;
 int window_height = 400;
@@ -21,11 +27,14 @@ int old_mouse_y = 150;
 //Model *m;
 World w;
 
-vec4 lightSourceDirection = vec4{0,3,0,1.0};
+
+vec4 lightSourceDirection = vec4{3.0,3.0,0.0,1.0};
 vec3 lightSourceColor = vec3{1,1,1};
 GLfloat t;
-GLuint program, shadows, bla;
-bool leftMB;
+GLuint program, shadows;
+bool c, leftMB, disp_volumes;
+mat4 projectionMatrix;
+
 
 void keyboard(unsigned char key, int x, int y)
 {
@@ -43,6 +52,11 @@ void keyboard(unsigned char key, int x, int y)
   case 'd':
     w.cam.place(0.5*VectorSub(vec3(0,0,0),left));
     break;
+  case 'v':
+    disp_volumes = !disp_volumes;
+  case 'c':
+    c = !c;
+  break;
   case  27:
     exit(0);
     break;
@@ -73,61 +87,76 @@ void MouseClickFunc( int button, int state, int x, int y) {
 
 void init(void)
 {
-  
-  dumpInfo();
+dumpInfo();
   t=0;
   //Init MouseButton state
   leftMB = false;
- 
+  c = true;
+  disp_volumes = false;
   // GL inits
   glClearColor(0.0,0.0,0.0,0);
   glEnable(GL_DEPTH_TEST);
   glEnable(GL_CULL_FACE);
   glCullFace(GL_BACK);
-  //  glEnable(GL_BLEND);
-  //  glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
+  glEnable(GL_BLEND);
+  glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
   printError("GL inits");
   // Load and compile shader
   shadows = loadShadersG("src/shadows.vert", "src/shadows.frag", "src/shadows.geom");
   program =  loadShaders("src/simple.vert", "src/simple.frag");//, "src/pass_through.geom");
 //  bla =  loadShaders("src/simple.vert", "src/simple2.frag");//, "src/pass_through.geom");
-  printError("init shader");
- 
+printError("init shader");
+
+//Ladda upp projectionMatrix
+//projectionMatrix = frustum(LEFT, RIGHT, BOTTOM, TOP, NEAR, FAR);
+//projectionMatrix = perspective(90, 1.0, 0.1, 1000);
+
+//glUniformMatrix4fv(glGetUniformLocation(program, "projectionMatrix"), 1, GL_TRUE, projectionMatrix.m);
+//glUniformMatrix4fv(glGetUniformLocation(shadows, "projectionMatrix"), 1, GL_TRUE, projectionMatrix.m);
+
+
   w = World();
+
 
   // Ladda upp ljusfarg
   glUniform3fv(glGetUniformLocation(program, "lightSourceColor"),1, &lightSourceColor.x);
-
+  glUniform4fv(glGetUniformLocation(shadows, "lightSourceDir"), 1, &lightSourceDirection.x);
+   glUniform4fv(glGetUniformLocation(program, "lightSourceDir"), 1, &lightSourceDirection.x);
 
 }
 
 void display(void)
 {
   printError("pre display");
-
+  glDepthMask(GL_TRUE);
   // clear the screen
+  //lightSourceDirection = vec4(w.cam.position.x,w.cam.position.y,w.cam.position.z,1.0); 
   glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT|GL_STENCIL_BUFFER_BIT);  
-
+  
   glUseProgram(program);
   glUniform4fv(glGetUniformLocation(program, "lightSourceDir"), 1, &lightSourceDirection.x);
 
+  
   // Initialize depth buffer and stencil buffer
   glColorMask(GL_TRUE,GL_TRUE,GL_FALSE,GL_FALSE);
   glEnable(GL_STENCIL_TEST);
   glStencilFunc(GL_NEVER,0,0xFFFFFFFF);	//Write 0's in stencil buffer
   glStencilOp(GL_REPLACE,GL_KEEP,GL_KEEP);	// See above
   w.draw(program);
-
+  
   // Set up the stencil buffer
 
-  //glDepthMask(GL_FALSE);	//Turn off depth-test
+  if (c)
+ {
+      glDepthMask(GL_FALSE);}	//Turn off depth-test
   
+
   glUseProgram(shadows);	// Switch to shadow volume generation 
   glUniform4fv(glGetUniformLocation(shadows, "lightSourceDir"), 1, &lightSourceDirection.x);
 
   glCullFace(GL_BACK);
   glStencilFunc(GL_ALWAYS,0,0xFFFFFFFF);
-  glStencilOp(GL_KEEP,GL_KEEP,GL_INCR_WRAP);	// Increment stencil buffer on depth-pass
+  glStencilOp(GL_KEEP,GL_KEEP,GL_INCR);	// Increment stencil buffer on depth-pass
 
   w.draw(shadows);
   //w.o.draw(program);
@@ -135,15 +164,16 @@ void display(void)
   glCullFace(GL_FRONT);
   glStencilFunc(GL_ALWAYS,0,0xFFFFFFFF);
 
-  glStencilOp(GL_KEEP,GL_KEEP,GL_DECR_WRAP); // Decrement stencil buffer on depth-pass
+  glStencilOp(GL_KEEP,GL_KEEP,GL_DECR); // Decrement stencil buffer on depth-pass
 
   w.draw(shadows);   
 
   // w.o.draw(program);
 
   // Reset depth and color 
+  glDepthMask(GL_TRUE);  
   glColorMask(GL_TRUE,GL_TRUE,GL_TRUE,GL_TRUE);
-  glDepthMask(GL_TRUE);
+  
   
   //draw scene
   glCullFace(GL_BACK);
@@ -156,8 +186,9 @@ void display(void)
   w.draw(program);
   
   glDisable(GL_STENCIL_TEST);	//Disable stencil buffer
-
+  
   glutSwapBuffers();
+
 
 }
 
@@ -190,7 +221,7 @@ void mouse_passive_move(int x, int y)
   w.cam.h_rotate(dx*M_PI*2*0.1);
   w.cam.v_rotate(dy*M_PI*2*0.1);
   if(leftMB){
-    w.o.place(w.cam.position + w.cam.forward);
+    w.o.place(w.cam.position + 4*w.cam.forward);
   }
 }
 
@@ -199,7 +230,7 @@ int main(int argc, char *argv[])
   glutInit(&argc, argv);
   glutInitDisplayMode(GLUT_RGBA|GLUT_DEPTH|GLUT_DOUBLE|GLUT_STENCIL);
   glutInitContextVersion(3, 2);
-  glutCreateWindow ("It's shiet being Scottish!");
+  glutCreateWindow ("Use the FORCE young yeti!");
   glutDisplayFunc(display); 
   glutReshapeFunc(&window_reshape);
   glutIdleFunc(idle);
