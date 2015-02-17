@@ -4,14 +4,18 @@
 \usepackage[utf8x]{inputenc}
 \usepackage{amsmath}
 \usepackage{graphicx}
+\usepackage[hidelinks]{hyperref}
 
 \title{Shadow Volumes using Geometry Shader}
-\author{Nora Björklund \& Johan Jönsson}
+\author{Nora Björklund \and Johan Jönsson}
 
 \begin{document}
 \maketitle
+\tableofcontents
+\newpage
 \section{Introduction}
-Shadow Volumes is a common way of creating real-time shadows, and has been used in games such as Doom 3.[REF] In this project the shadow volumes are implemented with the geometry shader. Implementation by geometry shader takes tedious vertex related processing away from the CPU, and insted uses the simultaneous processing power of the GPU.[REF]
+Shadow Volumes is a common way of creating real-time shadows, and has been used
+in games such as Doom 3 \cite{gpug1}. In this project the shadow volumes are implemented with the geometry shader. Implementation by geometry shader takes tedious vertex related processing away from the CPU, and insted uses the simultaneous processing power of the GPU.[REF]
 \subsection{Project Goal}
 \subsection{Planning and Allocation of Work}
 \section{Background}
@@ -26,4 +30,12 @@ Shadow Volumes is a common way of creating real-time shadows, and has been used 
 \section{Discussion }
 
 
+\begin{thebibliography}{9}
+\bibitem{gpug1}
+	Randima Fernando,
+	\emph{GPU Gems: Programming Techniques, Tips and Tricks for Real-Time
+	Graphics}.
+	Addison-Wesley Professional; First Edition edition, April 1, 2004.
+	\url{http://http.developer.nvidia.com/GPUGems/gpugems\_copyrightpg.html}
+\end{thebibliography}
 \end{document}
