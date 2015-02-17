@@ -22,7 +22,23 @@ in games such as Doom 3 \cite{gpug1}. In this project the shadow volumes are imp
 \subsection{Shadow Volumes}
 \subsection{Geometry Shader}
 \section{Implementation}
+In this chapter we will describe how we implemented the different parts of the
+project. We begin by discussing the overall structure of the program and then we
+dive into detail on the object loader and how we generate the shadow volumes
+using the geometry shader.
+
 \subsection{Program Structure}
+We have implemented a z-pass version of the shadow volumes algorithm. We begin
+by turning off the colour buffer rendering the scene into the depth buffer and
+writing zeros into the stencil buffer (using GL\_NEVER, 0 and G\_REPLACE on
+stencil fail). Next we turn off writing to the depth buffer, turn on back face
+culling, render the scene and increase the stencil buffer on z-pass. Then we
+turn on front face culling and decrement the stencil buffer on z-pass. This way
+any part of the scene in shadows will have a non-zero value in the stencil
+buffer, we turn the color buffer back on and render all lit parts of the scene
+using the stencil buffer (without changing the values in the stencil buffer).
+Finally we disable the stencil buffer and turn depth testing back on.
+
 \subsection{Object Loader}
 In order to produce proper shadow volumes it is necessary to know the neighbours
 of each vertex. Passing this information to the shader is a simple process since
@@ -51,14 +67,14 @@ neighbours in order to set up our list of indices for drawing the object..
 
 \begin{figure}[h]
 \centering
-\includegraphics[width=10cm]{triangle_adj.png}
+\includegraphics[width=10cm, trim = 0mm 50mm 0mm 50mm, clip]{triangle_adj.png}
 \caption{The triangle with adjacency primitive. Indices 0, 2, 4 form the
 original triangle and indices 1, 3, 5 are the adjacent vertices}
 \end{figure}
 
 To clarify what the object loader does, first we loop through every triangle in
 the object mesh and create a hash table containing the neighbour information for
-every them. For the triangle (0,1,2) we begin by inserting the edge (0,1) and
+all of them. For the triangle (0,1,2) we begin by inserting the edge (0,1) and
 the corresponding neighbour (2), then we insert the edge (1,2) and the
 neighbour (0) and finally we insert the edge (2,0) and the neighbour (1). By
 doing this for every triangle in the entire model mesh we can simply enter the
@@ -68,10 +84,59 @@ if we input the edge (2,4) we look in our hash table and find the neighbour
 by looping through every vertex in every triangle and looking up the neighbours.
 
 \subsection{Volumes}
-\subsection{Geometry Shader syntax}
-\section{Results}
-\section{Discussion }
+To generate the actual shadow volumes in the geometry shader is actually rather
+straight forward. We begin by generating the front cap, we simply extract all
+triangles facing the light. If the dot product between the light direction and
+the triangle normal is positive the triangle faces the light (we take the light
+direction to point from the triangle towards the light source). The sides of the
+shadow volumes are found by taking each edge and checking whether both triangles
+sharing this edge faces the light or not, if one triangle faces the light but
+not the other then the edge is part of the side of the shadow volume. We create
+the sides of the shadow volumes by creating two triangles (one quad) covering
+the area between the edge and its projection at infinity. Projection at infinity
+is simple to achieve using homogeneous coordinates, simply put the w-coordinate
+to zero.
 
+In this way we can effectively and simply generate the shadow volumes of our
+scene using the geometry shader.
+
+\subsection{Geometry Shader syntax}
+The geometry shader is a rather recent addition to the OpenGL pipeline and
+examples of how to use it are rather scarce. The few examples that do exist are
+usually written for older versions of OpenGL, where the geometry shader was an
+extension. Therefore in most of the examples found online the syntax used is
+both dated and often also unusable in modern OpenGL usage. Something that caused
+quite a steep learning curve for using the geometry shader.
+
+[VILL DU HA IN NÅT MER? JAG VET INTE ALLA PROBLEM DU HADE MED DET HÄR]
+
+\section{Results}
+Our implementation of shadow volumes is not entirely successful. We have never
+been able to render correct shadows on any computer. As can be seen in [LÄMPLIG
+FIGUR PÅ KANINER] we lack shadows on the lower rabbit, however the shadows on
+the ground seem to have been rendered correctly. The shadow volumes also change
+when the camera moves, something that they should definitely not do (unless
+there is a light source attached to the camera), unless we run the program on
+a computer in Southfork (which unfortunately has a stencil buffer of 0 bytes,
+hardly useful for us) where the volumes do not change as the camera moves. The
+volumes generated seem to be accurate, when rendered using the stencil buffer,
+apart from changing as the camera moves around (again, except for when we use a
+Southfork computer). If the camera is kept stationary and the light source
+moved, the shadow volumes seem to behave correctly, something that implies that
+the volumes computed with the geometry shader are indeed correct.
+
+\section{Discussion}
+As was mentioned above, our implementation of shadow volumes contain some
+bugs. We have been unable to find out what is causing this really strange
+behaviour and have no real ideas left. The error might be because of an error in
+the camera and or world matrices, however this seems unlikely as the scenes are
+normally rendered correctly, it might be that we multiply the vertices of the
+shadow volumes by the wrong combination of these matrices, but we have tried
+any combination of them and nothing has solved the problem. In order to really
+solve this problem we believe we would have to start over from scratch, simply
+redo the entire project and really focus on double checking every step of the
+generation of the shadow volumes. This seems like a rather extreme measure, but
+we have tried every other possible solution and are currently at our wits' end.
 
 \begin{thebibliography}{9}
 \bibitem{gpug1}
