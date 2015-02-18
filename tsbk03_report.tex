@@ -6,6 +6,26 @@
 \usepackage{graphicx}
 \usepackage{csquotes}
 \usepackage[hidelinks]{hyperref}
+\usepackage{booktabs}
+\usepackage{listings}
+
+\usepackage{colortbl}% http://ctan.org/pkg/colortbl
+\usepackage{xcolor}% http://ctan.org/pkg/xcolor
+
+\newcounter{examplecounter}
+\newenvironment{example}{\begin{quote}%
+    \refstepcounter{examplecounter}%
+  \textbf{Example \arabic{examplecounter}}%
+  \quad
+}{%
+\end{quote}%
+}
+
+\newcommand{\ra}[1]{\renewcommand{\arraystretch}{#1}}
+\colorlet{tableheadcolor}{gray!25} % Table header colour = 25% gray
+\newcommand{\headcol}{\rowcolor{tableheadcolor}} %
+\colorlet{tablerowcolor}{gray!10} % Table row separator colour = 10% gray
+\newcommand{\rowcol}{\rowcolor{tablerowcolor}} %
 
 \title{Shadow Volumes using Geometry Shader}
 \author{Nora Björklund \and Johan Jönsson}
@@ -30,6 +50,75 @@ The shadow volume algorithm was first proposed in 1977 by computer scientist Fra
 
 The method Heidmann described is more commonly called the Z-pass or Depth Pass, and is also the one which we implemented in this project. Another algorithm is the Z-fail/Depth Fail, which deals with the problem that occurs in Z-pass when the observer/camera is inside the shadow volume. 
 \subsection{Geometry Shader}
+The Geometry shader has been a core part of OpenGL since version 3.2 \cite{GEOM}. It is placed between the Vertex shader and the Vertex post-processing stages (such as primitive assembly and rasterization), and takes care of processing of primitives. It can recieve one single primitive and output a set of primitives (an output of no primitives is also possible).
+
+A geometry shader is defined to take a specific type of primitive where the available types are defined in table \ref{tab:GSprimitives}.
+
+\begin{table}
+\centering
+\caption{Table showing the types of input and output primitives that a geometry shader can process, from \cite{GEOM}. Here the vertex count is the number of vertices that geometry shaders recieves for every input primitive }
+\label{tab:GSprimitives}
+\begin{tabular}{lll} \toprule
+GS Input & OpenGL primitives & Vertex Count \\\headcol \midrule
+\headcol points& GL\_POINTS​&1\\
+\rowcol lines& GL\_LINES​, GL\_LINE\_STRIP​​&2\\
+\rowcol &  GL\_LINE\_LIST&\\
+\headcol lines\_adjacency&GL\_LINES\_ADJACENCY​&​3\\
+\headcol & GL\_LINE\_STRIP\_ADJACENCY&\\
+\rowcol triangles&GL\_TRIANGLES​​&4\\
+\rowcol & GL\_TRIANGLE\_STRIP​&\\
+\rowcol &GL\_TRIANGLE\_FAN&\\
+\headcol triangles\_adjacency&GL\_TRIANGLES\_ADJACENCY​​&6\\
+\headcol & GL\_TRIANGLE\_STRIP\_ADJACENCY&\\\midrule
+\end{tabular}
+\end{table}
+
+The allowed output primitives are \emph{points}, \emph{line\_strip}, \emph{triangle\_strip}.
+
+In a geometry shader program, the input and outputs are defined in the beginning of the geometry shader program, before the main-loop, as follows;
+\begin{center}
+\textbf{layout(input\_primitive​) in;}
+\end{center}
+Where the input primitive can be any of the ones given in table \ref{tab:GSprimitives}. 
+\begin{center}
+\textbf{layout(output\_primitive​, max\_vertices = vert\_count​) out;}
+\end{center}
+Here the max\_vertices must be defined, and is the maximum number of vertices that can be emitted in one pass through the shader.
+
+A pass-through geometry shader looks like the one in example \ref{ex:pass_through}. It is useless in itself but allows us a quick look at the simplest syntax of the shader. 
+
+\begin{example}\label{ex:pass_through}
+\hrule
+\begin{lstlisting}[language=c]
+#version 150 
+layout(triangles_adjacency) in;
+layout(triangle_strip, max_vertices=3) out;
+in vec3 ex_Position[];
+in vec3 ex_Normal[];
+in vec2 ex_TexCoord[];
+out vec3 f_Normal;
+out vec2 f_TexCoord;	     
+out vec3 f_Position;
+
+void main()
+{
+   //For pass through
+   for(int i = 0; i < gl_in.length(); i += 2)
+    {
+       // copy attributes
+      gl_Position = gl_in[i].gl_Position;
+      f_Normal = ex_Normal[i];
+      f_TexCoord = ex_TexCoord[i]; 
+      f_Position = ex_Position[i];
+ 
+      // done with the vertex
+       EmitVertex();
+    }
+   EndPrimitive();
+}
+\end{lstlisting}
+\hrule
+\end{example}
 
 \section{Implementation}
 In this chapter we will describe how we implemented the different parts of the project. We begin by discussing the overall structure of the program and then we dive into detail on the object loader and how we generate the shadow volumes using the geometry shader.
@@ -139,5 +228,9 @@ we have tried every other possible solution and are currently at our wits' end.
    H Kolivand, M Sunar,
    A Survey of Shadow Volume Algorithms in Computer Graphics.
    \emph{IETE TECHNICAL REVIEW.} 30, 1, 38-46, ISSN: 02564602
+\bibitem{GEOM}
+  OpenGL. Wiki,
+  \emph{Geometry Shader},
+  \url{https://www.opengl.org/wiki/Geometry_Shader}
 \end{thebibliography}
 \end{document}

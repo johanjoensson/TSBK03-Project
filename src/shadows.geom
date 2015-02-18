@@ -10,11 +10,10 @@ uniform mat4 viewMatrix;
 void main()
 {
   vec4 light = viewMatrix*lightSourceDir; // FIXME! err, not sure about the viewMatrix
-  vec3 n[3]; // Normals.. (could be fetched from teh ones we have?)
+  vec3 n[3]; // Normals.. (could be fetched from the ones we have?)
   vec3 d[3]; //direction toward light
   vec3 or_pos[3]; // Triangle oriented toward light source
   vec4 v[4]; //Temporary vertices
-
   or_pos[0]= vec3(gl_in[0].gl_Position);
   or_pos[1]= vec3(gl_in[2].gl_Position);
   or_pos[2]= vec3(gl_in[4].gl_Position);
