@@ -8,6 +8,7 @@
 \usepackage[hidelinks]{hyperref}
 \usepackage{booktabs}
 \usepackage{listings}
+\usepackage[style=mla]{biblatex}
 
 \usepackage{colortbl}% http://ctan.org/pkg/colortbl
 \usepackage{xcolor}% http://ctan.org/pkg/xcolor
@@ -35,28 +36,43 @@
 \tableofcontents
 \newpage
 \section{Introduction}
-Shadow Volumes is a common way of creating real-time hard-shadows, and has been used in games such as Doom 3 \cite{gpug1}. In this project, the shadow volumes are implemented with the geometry shader. Implementation by geometry shader takes tedious vertex related processing away from the CPU, and insted uses the simultaneous processing power of the GPU.[REF]
+Shadow Volumes is a common way of creating real-time hard-shadows, and has been used in games such as Doom 3 \footcite{gpug1}. In this project, the shadow volumes are implemented with the geometry shader. Implementation by geometry shader takes tedious vertex related processing away from the CPU, and insted uses the simultaneous processing power of the GPU.[REF]
 \subsection{Project Goal}
-The following goal was setup before the start of the project:
-\begin{displayquote}
-We want to implement shadow volumes in a changable, dynamic scene. Our first priority will be to implement working shadow volumes, and our secondary goal is to implement a game where you get a picture of a shadow and then have to place things vailable so that you get the same shadow as in the picture. We have found a document describing shadow volumes in GPU gems volume 2 and 3.
-\end{displayquote}
+The following goals was setup before the start of the project:
+\begin{itemize}
+\item Implement shadow volumes
+\item Place different object in the ``world''
+\item Place light-sources
+\item Compare to a pre-generated scene 
+\item Soft Shadows
+\end{itemize}
+If we have time over we wanted to implement the following tasks:
+\begin{itemize}
+\item Material med olika optiska egenskaper (transparens, brytningsindex)
+\item  ”Fancy” GUI
+\item  Different levels of difficulty (exactness of the shadows compared to the pregenerated)
+\item  Reflective surfaces (why make it simple)
+\item  Score board (since it is a game)
+\item  Time limitations (stress is fun)
+\item  Comparision with Shadow Maps (another game version?)
+\item  Leap Motion-control (seems cool!)
+\end{itemize}
 
-Due to sevaral problems that occured when implementing the shadow volumes, the project has been compromised to shadow volumes created with the help of the geometry shader and erroneus shadows. There are controls implemented to move around in the small world and simple controls to show/hide the shadow volumes, and move one of the bunny-objects thatwxists in the world. However, no game element has been implemented.
+Due to sevaral problems that occured when implementing the shadow volumes, the project has been compromised to shadow volumes created with the help of the geometry shader and erroneus shadows. There are controls implemented to move around in the small world and simple controls to show/hide the shadow volumes, and move one of the bunny-objects that exists in the world. However, no game element has been implemented. It is still a fun game idea to continue working on further.
 \section{Background}
 In this section short backgrounds to the techniques used in this project are given.
 \subsection{Shadow Volumes}
-The shadow volume algorithm was first proposed in 1977 by computer scientist Franklin Crow \cite{CROW77}. Later in 1991, Tim Heidmann published a paper describing the sillhouette detection by using the stecil buffer based on the shadow volumes \cite{HEIDMANN91}. Using the stencil buffer for silhouette detection is still today the main algorith for shadows with shadow volumes \cite{KOLIVAND13}. 
+The shadow volume algorithm was first proposed in 1977 by computer scientist Franklin Crow \footcite{CROW77}. Later in 1991, Tim Heidmann published a paper describing the sillhouette detection by using the stecil buffer based on the shadow volumes \footcite{HEIDMANN91}. Using the stencil buffer for silhouette detection is still today the main algorith for shadows with shadow volumes \footcite{KOLIVAND13}. 
 
 The method Heidmann described is more commonly called the Z-pass or Depth Pass, and is also the one which we implemented in this project. Another algorithm is the Z-fail/Depth Fail, which deals with the problem that occurs in Z-pass when the observer/camera is inside the shadow volume. 
 \subsection{Geometry Shader}
-The Geometry shader has been a core part of OpenGL since version 3.2 \cite{GEOM}. It is placed between the Vertex shader and the Vertex post-processing stages (such as primitive assembly and rasterization), and takes care of processing of primitives. It can recieve one single primitive and output a set of primitives (an output of no primitives is also possible).
+The Geometry shader has been a core part of OpenGL since version 3.2 \footcite{GEOM}. It is placed between the Vertex shader and the Vertex post-processing stages (such as primitive assembly and rasterization), and takes care of processing of primitives. It can recieve one single primitive and output a set of primitives (an output of no primitives is also possible).
 
 A geometry shader is defined to take a specific type of primitive where the available types are defined in table \ref{tab:GSprimitives}.
 
 \begin{table}
 \centering
-\caption{Table showing the types of input and output primitives that a geometry shader can process, from \cite{GEOM}. Here the vertex count is the number of vertices that geometry shaders recieves for every input primitive }
+\caption{Table showing the types of input and output primitives that a geometry shader can process, from \footcite{GEOM}. Here the vertex count is the number of vertices that geometry shaders recieves for every input primitive }
 \label{tab:GSprimitives}
 \begin{tabular}{lll} \toprule
 GS Input & OpenGL primitives & Vertex Count \\\headcol \midrule
@@ -86,7 +102,7 @@ Where the input primitive can be any of the ones given in table \ref{tab:GSprimi
 Here the max\_vertices must be defined, and is the maximum number of vertices that can be emitted in one pass through the shader.
 
 A pass-through geometry shader looks like the one in example \ref{ex:pass_through}. It is useless in itself but allows us a quick look at the simplest syntax of the shader. 
-
+\newpage 
 \begin{example}\label{ex:pass_through}
 \hrule
 \begin{lstlisting}[language=c]
@@ -123,6 +139,12 @@ void main()
 \section{Implementation}
 In this chapter we will describe how we implemented the different parts of the project. We begin by discussing the overall structure of the program and then we dive into detail on the object loader and how we generate the shadow volumes using the geometry shader.
 \subsection{Program Structure}
+In figure XX an outline of the program structure can be seen. In the main file we can, as in most computer graphic programs we have used in TSBK07 and TSBK03, see that we have a main loop that is using the two functions \textbf{init} and \textbf{display}. We have also added functions for orientation by mouse-movements (\textbf{mouse\_passive\_move}), movements and other functions implemented with keyboard clicks (\textbf{keyboard}), picking up/setting down objects (\textbf{MouseClickFunc}). 
+
+In the init function all the initial values and settings are set-up. Here we initiate the World, a class holding all the objects in the program. The objects can for example be point objects such as the camera or the light-source,  or visual objects like bunnies and ground/grass.
+
+These objects are then controlled and updated in the display loop. It is also here that we implement the shadow volume algorithm. All the objects in the world have the attributes position and rotation, and functions for placing them in other parts of the world, translation, rotation. The object class is then divided into subclasses further defining their individual properties.  
+
 We have implemented a z-pass version of the shadow volumes algorithm. We begin
 by turning off the colour buffer rendering the scene into the depth buffer and
 writing zeros into the stencil buffer (using GL\_NEVER, 0 and G\_REPLACE on
