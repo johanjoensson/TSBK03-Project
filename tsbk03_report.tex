@@ -8,8 +8,6 @@
 \usepackage[hidelinks]{hyperref}
 \usepackage{booktabs}
 \usepackage{listings}
-\usepackage[style=mla]{biblatex}
-
 \usepackage{colortbl}% http://ctan.org/pkg/colortbl
 \usepackage{xcolor}% http://ctan.org/pkg/xcolor
 
@@ -36,7 +34,7 @@
 \tableofcontents
 \newpage
 \section{Introduction}
-Shadow Volumes is a common way of creating real-time hard-shadows, and has been used in games such as Doom 3 \footcite{gpug1}. In this project, the shadow volumes are implemented with the geometry shader. Implementation by geometry shader takes tedious vertex related processing away from the CPU, and insted uses the simultaneous processing power of the GPU.[REF]
+Shadow Volumes is a common way of creating real-time hard-shadows, and has been used in games such as Doom 3 \cite{gpug1}. In this project, the shadow volumes are implemented with the geometry shader. Implementation by geometry shader takes tedious vertex related processing away from the CPU, and insted uses the simultaneous processing power of the GPU.
 \subsection{Project Goal}
 The following goals was setup before the start of the project:
 \begin{itemize}
@@ -62,17 +60,17 @@ Due to sevaral problems that occured when implementing the shadow volumes, the p
 \section{Background}
 In this section short backgrounds to the techniques used in this project are given.
 \subsection{Shadow Volumes}
-The shadow volume algorithm was first proposed in 1977 by computer scientist Franklin Crow \footcite{CROW77}. Later in 1991, Tim Heidmann published a paper describing the sillhouette detection by using the stecil buffer based on the shadow volumes \footcite{HEIDMANN91}. Using the stencil buffer for silhouette detection is still today the main algorith for shadows with shadow volumes \footcite{KOLIVAND13}. 
+The shadow volume algorithm was first proposed in 1977 by computer scientist Franklin Crow \cite{CROW77}. Later in 1991, Tim Heidmann published a paper describing the sillhouette detection by using the stecil buffer based on the shadow volumes \cite{HEIDMANN91}. Using the stencil buffer for silhouette detection is still today the main algorith for shadows with shadow volumes \cite{KOLIVAND13}. 
 
 The method Heidmann described is more commonly called the Z-pass or Depth Pass, and is also the one which we implemented in this project. Another algorithm is the Z-fail/Depth Fail, which deals with the problem that occurs in Z-pass when the observer/camera is inside the shadow volume. 
 \subsection{Geometry Shader}
-The Geometry shader has been a core part of OpenGL since version 3.2 \footcite{GEOM}. It is placed between the Vertex shader and the Vertex post-processing stages (such as primitive assembly and rasterization), and takes care of processing of primitives. It can recieve one single primitive and output a set of primitives (an output of no primitives is also possible).
+The Geometry shader has been a core part of OpenGL since version 3.2 \cite{GEOM}. It is placed between the Vertex shader and the Vertex post-processing stages (such as primitive assembly and rasterization), and takes care of processing of primitives. It can recieve one single primitive and output a set of primitives (an output of no primitives is also possible).
 
 A geometry shader is defined to take a specific type of primitive where the available types are defined in table \ref{tab:GSprimitives}.
 
 \begin{table}
 \centering
-\caption{Table showing the types of input and output primitives that a geometry shader can process, from \footcite{GEOM}. Here the vertex count is the number of vertices that geometry shaders recieves for every input primitive }
+\caption{Table showing the types of input and output primitives that a geometry shader can process, from \cite{GEOM}. Here the vertex count is the number of vertices that geometry shaders recieves for every input primitive }
 \label{tab:GSprimitives}
 \begin{tabular}{lll} \toprule
 GS Input & OpenGL primitives & Vertex Count \\\headcol \midrule
@@ -139,8 +137,13 @@ void main()
 \section{Implementation}
 In this chapter we will describe how we implemented the different parts of the project. We begin by discussing the overall structure of the program and then we dive into detail on the object loader and how we generate the shadow volumes using the geometry shader.
 \subsection{Program Structure}
-In figure XX an outline of the program structure can be seen. In the main file we can, as in most computer graphic programs we have used in TSBK07 and TSBK03, see that we have a main loop that is using the two functions \textbf{init} and \textbf{display}. We have also added functions for orientation by mouse-movements (\textbf{mouse\_passive\_move}), movements and other functions implemented with keyboard clicks (\textbf{keyboard}), picking up/setting down objects (\textbf{MouseClickFunc}). 
-
+In figure \ref{fig:program} an outline of the program structure can be seen. In the main file we can, as in most computer graphic programs we have used in TSBK07 and TSBK03, see that we have a main loop that is using the two functions \textbf{init} and \textbf{display}. We have also added functions for orientation by mouse-movements (\textbf{mouse\_passive\_move}), movements and other functions implemented with keyboard clicks (\textbf{keyboard}), picking up/setting down objects (\textbf{MouseClickFunc}). 
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{program.png}
+\caption{Program structure}
+\label{fig:program}
+\end{figure}
 In the init function all the initial values and settings are set-up. Here we initiate the World, a class holding all the objects in the program. The objects can for example be point objects such as the camera or the light-source,  or visual objects like bunnies and ground/grass.
 
 These objects are then controlled and updated in the display loop. It is also here that we implement the shadow volume algorithm. All the objects in the world have the attributes position and rotation, and functions for placing them in other parts of the world, translation, rotation. The object class is then divided into subclasses further defining their individual properties.  
@@ -155,6 +158,12 @@ any part of the scene in shadows will have a non-zero value in the stencil
 buffer, we turn the color buffer back on and render all lit parts of the scene
 using the stencil buffer (without changing the values in the stencil buffer).
 Finally we disable the stencil buffer and turn depth testing back on.
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{volume.png}
+\caption{Z-Pass visualized }
+\label{fig:zpass}
+\end{figure}
 
 \subsection{Object Loader}
 In order to produce proper shadow volumes it is necessary to know the neighbours
@@ -202,29 +211,39 @@ by looping through every vertex in every triangle and looking up the neighbours.
 
 \subsection{Volumes}
 To generate the actual shadow volumes in the geometry shader is actually rather straight forward. We begin by generating the front cap, we simply extract all triangles facing the light. If the dot product between the light direction and the triangle normal is positive the triangle faces the light (we take the light direction to point from the triangle towards the light source). The sides of the shadow volumes are found by taking each edge and checking whether both triangles sharing this edge faces the light or not, if one triangle faces the light but not the other then the edge is part of the side of the shadow volume. We create the sides of the shadow volumes by creating two triangles (one quad) covering the area between the edge and its projection at infinity. Projection at infinity is simple to achieve using homogeneous coordinates, simply put the w-coordinate to zero.
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{volume_gen.png}
+\caption{Generation of shadow volumes. }
+\label{fig:gener}
+\end{figure}
 
 In this way we can effectively and simply generate the shadow volumes of our scene using the geometry shader.
 
 \subsection{Geometry Shader syntax}
-The geometry shader is a rather recent addition to the OpenGL pipeline and examples of how to use it are rather scarce. The few examples that do exist are usually written for older versions of OpenGL, where the geometry shader was an extension. Therefore, in most of the examples found online the syntax used is both dated and often also unusable in modern OpenGL usage. Something that caused quite a steep learning curve for using the geometry shader.
-
-[VILL DU HA IN NÅT MER? JAG VET INTE ALLA PROBLEM DU HADE MED DET HÄR]
+The geometry shader is a rather recent addition to the OpenGL pipeline and examples of how to use it are rather scarce. The few examples that do exist are usually written for older versions of OpenGL, where the geometry shader was an extension. Therefore, in most of the examples found online the syntax used is both dated and often also unusable in modern OpenGL usage. This is something that caused quite a steep learning curve for using the geometry shader.
 
 \section{Results}
-Our implementation of shadow volumes is not entirely successful. We have never
-been able to render correct shadows on any computer. As can be seen in [LÄMPLIG
-FIGUR PÅ KANINER] we lack shadows on the lower rabbit, however the shadows on
-the ground seem to have been rendered correctly. The shadow volumes also change
-when the camera moves, something that they should definitely not do (unless
-there is a light source attached to the camera), unless we run the program on
-a computer in Southfork (which unfortunately has a stencil buffer of 0 bytes,
-hardly useful for us) where the volumes do not change as the camera moves. The
-volumes generated seem to be accurate, when rendered using the stencil buffer,
-apart from changing as the camera moves around (again, except for when we use a
-Southfork computer). If the camera is kept stationary and the light source
-moved, the shadow volumes seem to behave correctly, something that implies that
-the volumes computed with the geometry shader are indeed correct.
+Our implementation of shadow volumes is not entirely successful. We have never been able to render correct shadows on any computer. As can be seen in figure \ref{fig:shadow} we lack shadows on the lower rabbit, however the shadows on the ground seem to have been rendered correctly. The shadow volumes also change when the camera moves, something that they should definitely not do (unless there is a light source attached to the camera), unless we run the program on a computer in Southfork (which unfortunately has a stencil buffer of 0 bytes, hardly useful for us) where the volumes do not change as the camera moves. The volumes generated seem to be accurate, when rendered using the stencil buffer, apart from changing as the camera moves around (again, except for when we use a Southfork computer). If the camera is kept stationary and the light source moved, the shadow volumes seem to behave correctly, something that implies that the volumes computed with the geometry shader are indeed correct.
 
+Changing the settings for the stenciling with the stencil buffer from drawing on equal to zero to less than equal will give us seemingly unmoving correct volumes (figure \ref{fig:volumes}, that does not move with the camera. However, no shadow will be seen.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{volumes.png}
+\caption{Shadow Volumes that looks correct. However, the stencil buffer steps seem ``out-of-function'' since no shadow will be visible after he last rendering.}
+\label{fig:volumes}
+\end{figure}
+
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{skuggvolymer.png}
+\caption{Shadow volumes that are seems to be correct; however, tehy give no shadow. }
+\label{fig:shadow}
+\end{figure}
+
+ 
 \section{Discussion}
 As was mentioned above, our implementation of shadow volumes contain some bugs. We have been unable to find out what is causing this really strange behaviour and have no real ideas left. The error might be because of an error in the camera and or world matrices, however this seems unlikely as the scenes are normally rendered correctly, it might be that we multiply the vertices of the shadow volumes by the wrong combination of these matrices, but we have tried any combination of them and nothing has solved the problem. In order to really solve this problem we believe we would have to start over from scratch, simply redo the entire project and really focus on double checking every step of the generation of the shadow volumes. This seems like a rather extreme measure, but
 we have tried every other possible solution and are currently at our wits' end.
@@ -232,8 +251,7 @@ we have tried every other possible solution and are currently at our wits' end.
 \begin{thebibliography}{9}
 \bibitem{gpug1}
 	Randima Fernando,
-	\emph{GPU Gems: Programming Techniques, Tips and Tricks for Real-Time
-	Graphics}.
+	\emph{GPU Gems: Programming Techniques, Tips and Tricks for Real-Time Graphics}.
 	Addison-Wesley Professional; First Edition edition, April 1, 2004.
 	\url{http://http.developer.nvidia.com/GPUGems/gpugems\_copyrightpg.html}
 
