@@ -4,6 +4,7 @@
 \usepackage[utf8x]{inputenc}
 \usepackage{amsmath}
 \usepackage{graphicx}
+\usepackage{csquotes}
 
 \title{Shadow Volumes using Geometry Shader}
 \author{Nora Björklund \& Johan Jönsson}
@@ -13,7 +14,12 @@
 \section{Introduction}
 Shadow Volumes is a common way of creating real-time shadows, and has been used in games such as Doom 3.[REF] In this project the shadow volumes are implemented with the geometry shader. Implementation by geometry shader takes tedious vertex related processing away from the CPU, and insted uses the simultaneous processing power of the GPU.[REF]
 \subsection{Project Goal}
+The following goal was setup before the start of the project:
+\begin{displayquote}
+We want to implement shadow volumes in a changable, dynamic scene. Our first priority will be to implement working shadow volumes, and our secondary goal is to implement a game where you get a picture of a shadow and then have to place things vailable so that you get the same shadow as in the picture. We have found a document describing shadow volumes in GPU gems volume 2 and 3. [REF]
+\end{displayquote}
 \subsection{Planning and Allocation of Work}
+(vet ej om denna är nödvändig)
 \section{Background}
 \subsection{Shadow Volumes}
 \subsection{Geometry Shader}
