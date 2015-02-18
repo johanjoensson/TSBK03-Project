@@ -34,7 +34,7 @@
 \tableofcontents
 \newpage
 \section{Introduction}
-Shadow Volumes is a common way of creating real-time hard-shadows, and has been used in games such as Doom 3 \cite{gpug1}. In this project, the shadow volumes are implemented with the geometry shader. Implementation by geometry shader takes tedious vertex related processing away from the CPU, and insted uses the simultaneous processing power of the GPU.
+Shadow Volumes is a common way of creating real-time hard-shadows, and has been used in games such as Doom 3 \cite{gpug1}. In this project, the shadow volumes are implemented with the geometry shader. Implementation by geometry shader takes tedious vertex related processing away from the CPU, and instead uses the simultaneous processing power of the GPU.
 \subsection{Project Goal}
 The following goals was setup before the start of the project:
 \begin{itemize}
@@ -46,31 +46,32 @@ The following goals was setup before the start of the project:
 \end{itemize}
 If we have time over we wanted to implement the following tasks:
 \begin{itemize}
-\item Material med olika optiska egenskaper (transparens, brytningsindex)
+\item Materials with different optical properties (such as transparency,
+refraction index etc.)
 \item  ”Fancy” GUI
-\item  Different levels of difficulty (exactness of the shadows compared to the pregenerated)
+\item  Different levels of difficulty (exactness of the shadows compared to the pre generated)
 \item  Reflective surfaces (why make it simple)
 \item  Score board (since it is a game)
 \item  Time limitations (stress is fun)
-\item  Comparision with Shadow Maps (another game version?)
+\item  Comparison with Shadow Maps (another game version?)
 \item  Leap Motion-control (seems cool!)
 \end{itemize}
 
-Due to sevaral problems that occured when implementing the shadow volumes, the project has been compromised to shadow volumes created with the help of the geometry shader and erroneus shadows. There are controls implemented to move around in the small world and simple controls to show/hide the shadow volumes, and move one of the bunny-objects that exists in the world. However, no game element has been implemented. It is still a fun game idea to continue working on further.
+Due to several problems that occurred when implementing the shadow volumes, the project has been compromised to shadow volumes created with the help of the geometry shader and erroneous shadows. There are controls implemented to move around in the small world and simple controls to show/hide the shadow volumes, and move one of the bunny-objects that exists in the world. However, no game element has been implemented. It is still a fun game idea to continue working on further.
 \section{Background}
 In this section short backgrounds to the techniques used in this project are given.
 \subsection{Shadow Volumes}
-The shadow volume algorithm was first proposed in 1977 by computer scientist Franklin Crow \cite{CROW77}. Later in 1991, Tim Heidmann published a paper describing the sillhouette detection by using the stecil buffer based on the shadow volumes \cite{HEIDMANN91}. Using the stencil buffer for silhouette detection is still today the main algorith for shadows with shadow volumes \cite{KOLIVAND13}. 
+The shadow volume algorithm was first proposed in 1977 by computer scientist Franklin Crow \cite{CROW77}. Later in 1991, Tim Heidmann published a paper describing the silhouette detection by using the stencil buffer based on the shadow volumes \cite{HEIDMANN91}. Using the stencil buffer for silhouette detection is still today the main algorithm for shadows with shadow volumes \cite{KOLIVAND13}. 
 
 The method Heidmann described is more commonly called the Z-pass or Depth Pass, and is also the one which we implemented in this project. Another algorithm is the Z-fail/Depth Fail, which deals with the problem that occurs in Z-pass when the observer/camera is inside the shadow volume. 
 \subsection{Geometry Shader}
-The Geometry shader has been a core part of OpenGL since version 3.2 \cite{GEOM}. It is placed between the Vertex shader and the Vertex post-processing stages (such as primitive assembly and rasterization), and takes care of processing of primitives. It can recieve one single primitive and output a set of primitives (an output of no primitives is also possible).
+The Geometry shader has been a core part of OpenGL since version 3.2 \cite{GEOM}. It is placed between the Vertex shader and the Vertex post-processing stages (such as primitive assembly and rasterization), and takes care of processing of primitives. It can receive one single primitive and output a set of primitives (an output of no primitives is also possible).
 
 A geometry shader is defined to take a specific type of primitive where the available types are defined in table \ref{tab:GSprimitives}.
 
 \begin{table}
 \centering
-\caption{Table showing the types of input and output primitives that a geometry shader can process, from \cite{GEOM}. Here the vertex count is the number of vertices that geometry shaders recieves for every input primitive }
+\caption{Table showing the types of input and output primitives that a geometry shader can process, from \cite{GEOM}. Here the vertex count is the number of vertices that geometry shaders receives for every input primitive }
 \label{tab:GSprimitives}
 \begin{tabular}{lll} \toprule
 GS Input & OpenGL primitives & Vertex Count \\\headcol \midrule
@@ -239,7 +240,7 @@ Changing the settings for the stenciling with the stencil buffer from drawing on
 \begin{figure}[h]
 \centering
 \includegraphics[width=\textwidth]{skuggvolymer.png}
-\caption{Shadow volumes that are seems to be correct; however, tehy give no shadow. }
+\caption{Shadow volumes that are seems to be correct; however, they give no shadow. }
 \label{fig:shadow}
 \end{figure}
 
