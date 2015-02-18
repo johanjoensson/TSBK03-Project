@@ -15,24 +15,24 @@
 \tableofcontents
 \newpage
 \section{Introduction}
-Shadow Volumes is a common way of creating real-time shadows, and has been used
-in games such as Doom 3 \cite{gpug1}. In this project the shadow volumes are implemented with the geometry shader. Implementation by geometry shader takes tedious vertex related processing away from the CPU, and insted uses the simultaneous processing power of the GPU.[REF]
+Shadow Volumes is a common way of creating real-time hard-shadows, and has been used in games such as Doom 3 \cite{gpug1}. In this project, the shadow volumes are implemented with the geometry shader. Implementation by geometry shader takes tedious vertex related processing away from the CPU, and insted uses the simultaneous processing power of the GPU.[REF]
 \subsection{Project Goal}
 The following goal was setup before the start of the project:
 \begin{displayquote}
-We want to implement shadow volumes in a changable, dynamic scene. Our first priority will be to implement working shadow volumes, and our secondary goal is to implement a game where you get a picture of a shadow and then have to place things vailable so that you get the same shadow as in the picture. We have found a document describing shadow volumes in GPU gems volume 2 and 3. [REF]
+We want to implement shadow volumes in a changable, dynamic scene. Our first priority will be to implement working shadow volumes, and our secondary goal is to implement a game where you get a picture of a shadow and then have to place things vailable so that you get the same shadow as in the picture. We have found a document describing shadow volumes in GPU gems volume 2 and 3.
 \end{displayquote}
-\subsection{Planning and Allocation of Work}
-(vet ej om denna är nödvändig)
-\section{Background}
-\subsection{Shadow Volumes}
-\subsection{Geometry Shader}
-\section{Implementation}
-In this chapter we will describe how we implemented the different parts of the
-project. We begin by discussing the overall structure of the program and then we
-dive into detail on the object loader and how we generate the shadow volumes
-using the geometry shader.
 
+Due to sevaral problems that occured when implementing the shadow volumes, the project has been compromised to shadow volumes created with the help of the geometry shader and erroneus shadows. There are controls implemented to move around in the small world and simple controls to show/hide the shadow volumes, and move one of the bunny-objects thatwxists in the world. However, no game element has been implemented.
+\section{Background}
+In this section short backgrounds to the techniques used in this project are given.
+\subsection{Shadow Volumes}
+The shadow volume algorithm was first proposed in 1977 by computer scientist Franklin Crow \cite{CROW77}. Later in 1991, Tim Heidmann published a paper describing the sillhouette detection by using the stecil buffer based on the shadow volumes \cite{HEIDMANN91}. Using the stencil buffer for silhouette detection is still today the main algorith for shadows with shadow volumes \cite{KOLIVAND13}. 
+
+The method Heidmann described is more commonly called the Z-pass or Depth Pass, and is also the one which we implemented in this project. Another algorithm is the Z-fail/Depth Fail, which deals with the problem that occurs in Z-pass when the observer/camera is inside the shadow volume. 
+\subsection{Geometry Shader}
+
+\section{Implementation}
+In this chapter we will describe how we implemented the different parts of the project. We begin by discussing the overall structure of the program and then we dive into detail on the object loader and how we generate the shadow volumes using the geometry shader.
 \subsection{Program Structure}
 We have implemented a z-pass version of the shadow volumes algorithm. We begin
 by turning off the colour buffer rendering the scene into the depth buffer and
@@ -90,29 +90,12 @@ if we input the edge (2,4) we look in our hash table and find the neighbour
 by looping through every vertex in every triangle and looking up the neighbours.
 
 \subsection{Volumes}
-To generate the actual shadow volumes in the geometry shader is actually rather
-straight forward. We begin by generating the front cap, we simply extract all
-triangles facing the light. If the dot product between the light direction and
-the triangle normal is positive the triangle faces the light (we take the light
-direction to point from the triangle towards the light source). The sides of the
-shadow volumes are found by taking each edge and checking whether both triangles
-sharing this edge faces the light or not, if one triangle faces the light but
-not the other then the edge is part of the side of the shadow volume. We create
-the sides of the shadow volumes by creating two triangles (one quad) covering
-the area between the edge and its projection at infinity. Projection at infinity
-is simple to achieve using homogeneous coordinates, simply put the w-coordinate
-to zero.
+To generate the actual shadow volumes in the geometry shader is actually rather straight forward. We begin by generating the front cap, we simply extract all triangles facing the light. If the dot product between the light direction and the triangle normal is positive the triangle faces the light (we take the light direction to point from the triangle towards the light source). The sides of the shadow volumes are found by taking each edge and checking whether both triangles sharing this edge faces the light or not, if one triangle faces the light but not the other then the edge is part of the side of the shadow volume. We create the sides of the shadow volumes by creating two triangles (one quad) covering the area between the edge and its projection at infinity. Projection at infinity is simple to achieve using homogeneous coordinates, simply put the w-coordinate to zero.
 
-In this way we can effectively and simply generate the shadow volumes of our
-scene using the geometry shader.
+In this way we can effectively and simply generate the shadow volumes of our scene using the geometry shader.
 
 \subsection{Geometry Shader syntax}
-The geometry shader is a rather recent addition to the OpenGL pipeline and
-examples of how to use it are rather scarce. The few examples that do exist are
-usually written for older versions of OpenGL, where the geometry shader was an
-extension. Therefore in most of the examples found online the syntax used is
-both dated and often also unusable in modern OpenGL usage. Something that caused
-quite a steep learning curve for using the geometry shader.
+The geometry shader is a rather recent addition to the OpenGL pipeline and examples of how to use it are rather scarce. The few examples that do exist are usually written for older versions of OpenGL, where the geometry shader was an extension. Therefore, in most of the examples found online the syntax used is both dated and often also unusable in modern OpenGL usage. Something that caused quite a steep learning curve for using the geometry shader.
 
 [VILL DU HA IN NÅT MER? JAG VET INTE ALLA PROBLEM DU HADE MED DET HÄR]
 
@@ -132,16 +115,7 @@ moved, the shadow volumes seem to behave correctly, something that implies that
 the volumes computed with the geometry shader are indeed correct.
 
 \section{Discussion}
-As was mentioned above, our implementation of shadow volumes contain some
-bugs. We have been unable to find out what is causing this really strange
-behaviour and have no real ideas left. The error might be because of an error in
-the camera and or world matrices, however this seems unlikely as the scenes are
-normally rendered correctly, it might be that we multiply the vertices of the
-shadow volumes by the wrong combination of these matrices, but we have tried
-any combination of them and nothing has solved the problem. In order to really
-solve this problem we believe we would have to start over from scratch, simply
-redo the entire project and really focus on double checking every step of the
-generation of the shadow volumes. This seems like a rather extreme measure, but
+As was mentioned above, our implementation of shadow volumes contain some bugs. We have been unable to find out what is causing this really strange behaviour and have no real ideas left. The error might be because of an error in the camera and or world matrices, however this seems unlikely as the scenes are normally rendered correctly, it might be that we multiply the vertices of the shadow volumes by the wrong combination of these matrices, but we have tried any combination of them and nothing has solved the problem. In order to really solve this problem we believe we would have to start over from scratch, simply redo the entire project and really focus on double checking every step of the generation of the shadow volumes. This seems like a rather extreme measure, but
 we have tried every other possible solution and are currently at our wits' end.
 
 \begin{thebibliography}{9}
@@ -151,5 +125,19 @@ we have tried every other possible solution and are currently at our wits' end.
 	Graphics}.
 	Addison-Wesley Professional; First Edition edition, April 1, 2004.
 	\url{http://http.developer.nvidia.com/GPUGems/gpugems\_copyrightpg.html}
+
+\bibitem{CROW77}
+  Franklin C. Crow,
+  Shadow Algorithms for Computer Graphics.
+  \emph{Computer Graphics, Vol 11, no.2}, pp242-7,1977.
+
+\bibitem{HEIDMANN91}
+  Tim Heidmann,
+  Real Shadows Real Time.
+  \emph{Iris Universe} 28, 28-31.
+\bibitem{KOLIVAND13}
+   H Kolivand, M Sunar,
+   A Survey of Shadow Volume Algorithms in Computer Graphics.
+   \emph{IETE TECHNICAL REVIEW.} 30, 1, 38-46, ISSN: 02564602
 \end{thebibliography}
 \end{document}
