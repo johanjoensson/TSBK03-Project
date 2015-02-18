@@ -25,7 +25,7 @@ void World::draw(int program)
    cam.draw(program);
    ground.draw(program);
     
-   o.draw(program);
+//   o.draw(program);
    p.draw(program);
 } 
 
